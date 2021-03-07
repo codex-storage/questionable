@@ -56,3 +56,32 @@ suite "optionals":
     let a = 42.some
     if a =? a:
       check a == 42
+
+  test "unary operator `-` works for options":
+    check -(-42.some) == 42.some
+    check -(int.none) == int.none
+
+  test "other unary operators work for options":
+    check +(42.some) == 42.some
+    check @([1, 2].some) == (@[1, 2]).some
+
+  test "binary operator `+` works for options":
+    check 40.some + 2.some == 42.some
+    check 40.some + 2 == 42.some
+    check int.none + 2 == int.none
+    check 40.some + int.none == int.none
+    check int.none + int.none == int.none
+
+  test "other binary operators work for options":
+    check 21.some * 2 == 42.some
+    check 84'f.some / 2'f == 42'f.some
+    check 84.some div 2 == 42.some
+    check 85.some mod 43 == 42.some
+    check 0b00110011.some shl 1 == 0b01100110.some
+    check 0b00110011.some shr 1 == 0b00011001.some
+    check 44.some - 2 == 42.some
+    check "f".some & "oo" == "foo".some
+    check 40.some <= 42 == true.some
+    check 40.some < 42 == true.some
+    check 40.some >= 42 == false.some
+    check 40.some > 42 == false.some

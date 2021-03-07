@@ -33,3 +33,47 @@ template `|?`*[T](value: ?!T, fallback: T): T =
 template `=?`*[T](name: untyped{nkIdent}, value: ?!T): bool =
   template name: T {.used.} = value.unsafeGet()
   value.isOk
+
+template liftPrefix(_: type Result, operator: untyped) =
+
+  template `operator`*(a: ?!typed): ?!typed =
+    type T = type(`operator`(a.unsafeGet))
+    if x =? a:
+      `operator`(x).success
+    else:
+      T.failure(a.error)
+
+template liftInfix(_: type Result, operator: untyped) =
+
+  template `operator`*(a: ?!typed, b: ?!typed): ?!typed =
+    type T = type(`operator`(a.unsafeGet, b.unsafeGet))
+    if x =? a and y =? b:
+      `operator`(x, y).success
+    elif a.isErr:
+      T.failure(a.error)
+    else:
+      T.failure(b.error)
+
+  template `operator`*(a: ?!typed, b: typed): ?!typed =
+    type T = type(`operator`(a.unsafeGet, b))
+    if x =? a:
+      `operator`(x, b).success
+    else:
+      T.failure(a.error)
+
+Result.liftPrefix(`-`)
+Result.liftPrefix(`+`)
+Result.liftPrefix(`@`)
+Result.liftInfix(`*`)
+Result.liftInfix(`/`)
+Result.liftInfix(`div`)
+Result.liftInfix(`mod`)
+Result.liftInfix(`shl`)
+Result.liftInfix(`shr`)
+Result.liftInfix(`+`)
+Result.liftInfix(`-`)
+Result.liftInfix(`&`)
+Result.liftInfix(`<=`)
+Result.liftInfix(`<`)
+Result.liftInfix(`>=`)
+Result.liftInfix(`>`)

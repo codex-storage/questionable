@@ -63,3 +63,32 @@ suite "result":
   test "catch can be used to convert exceptions to results":
     check parseInt("42").catch == 42.success
     check parseInt("foo").catch.error of ValueError
+
+  test "unary operator `-` works for results":
+    check -(-42.success) == 42.success
+    check -(int.failure(error)) == int.failure(error)
+
+  test "other unary operators work for results":
+    check +(42.success) == 42.success
+    check @([1, 2].success) == (@[1, 2]).success
+
+  test "binary operator `+` works for results":
+    check 40.success + 2.success == 42.success
+    check 40.success + 2 == 42.success
+    check int.failure(error) + 2 == int.failure(error)
+    check 40.success + int.failure(error) == int.failure(error)
+    check int.failure(error) + int.failure(error) == int.failure(error)
+
+  test "other binary operators work for results":
+    check (21.success * 2 == 42.success)
+    check (84'f.success / 2'f == 42'f.success)
+    check (84.success div 2 == 42.success)
+    check (85.success mod 43 == 42.success)
+    check (0b00110011.success shl 1 == 0b01100110.success)
+    check (0b00110011.success shr 1 == 0b00011001.success)
+    check (44.success - 2 == 42.success)
+    check ("f".success & "oo" == "foo".success)
+    check (40.success <= 42 == true.success)
+    check (40.success < 42 == true.success)
+    check (40.success >= 42 == false.success)
+    check (40.success > 42 == false.success)
