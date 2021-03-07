@@ -34,7 +34,7 @@ template `=?`*[T](name: untyped{nkIdent}, option: ?T): bool =
 template liftPrefix(_: type Option, operator: untyped) =
 
   template `operator`*(a: ?typed): ?typed =
-    type T = type(`operator`(a.unsafeGet))
+    type T {.used.} = type(`operator`(a.unsafeGet))
     if x =? a:
       `operator`(x).some
     else:
