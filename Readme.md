@@ -179,6 +179,14 @@ let x = parseInt("42").catch  # equals 42.success
 let y = parseInt("XX").catch  # equals int.failure(..)
 ```
 
+### Conversion to Option
+
+Any Result can be converted to an Option:
+
+```nim
+let converted = works().toOption  # equals @[1, 1, 2, 2, 2].some
+```
+
 Banning Errors
 --------------
 

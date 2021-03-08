@@ -1,3 +1,4 @@
+import ./options
 import ./resultsbase
 
 include ./errorban
@@ -26,6 +27,12 @@ template `|?`*[T](value: ?!T, fallback: T): T =
 template `=?`*[T](name: untyped{nkIdent}, value: ?!T): bool =
   template name: T {.used.} = value.unsafeGet()
   value.isOk
+
+proc toOption*[T,E](value: Result[T,E]): ?T =
+  if value.isOk:
+    value.unsafeGet.some
+  else:
+    T.none
 
 template liftUnary(_: type Result, operator: untyped) =
 

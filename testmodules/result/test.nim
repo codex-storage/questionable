@@ -1,6 +1,7 @@
 import std/unittest
 import std/sequtils
 import std/strutils
+import pkg/questionable
 import pkg/questionable/results
 
 suite "result":
@@ -93,6 +94,10 @@ suite "result":
     check (40.success < 42 == true.success)
     check (40.success >= 42 == false.success)
     check (40.success > 42 == false.success)
+
+  test "Result can be converted to Option":
+    check 42.success.toOption == 42.some
+    check int.failure(error).toOption == int.none
 
   test "examples from readme work":
 
