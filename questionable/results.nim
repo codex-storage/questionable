@@ -20,13 +20,6 @@ template `.?`*(value: ?!typed, field: untyped{nkIdent}): ?!untyped =
   else:
     err(?!T, error(value))
 
-template `[]`*(value: ?!typed, index: typed): ?!typed =
-  type T = type value.get[index]
-  if value.isOk:
-    ok(?!T, value.unsafeGet()[index])
-  else:
-    err(?!T, error(value))
-
 template `|?`*[T](value: ?!T, fallback: T): T =
   value.valueOr(fallback)
 
@@ -34,7 +27,7 @@ template `=?`*[T](name: untyped{nkIdent}, value: ?!T): bool =
   template name: T {.used.} = value.unsafeGet()
   value.isOk
 
-template liftPrefix(_: type Result, operator: untyped) =
+template liftUnary(_: type Result, operator: untyped) =
 
   template `operator`*(a: ?!typed): ?!typed =
     type T {.used.} = type(`operator`(a.unsafeGet))
@@ -43,7 +36,7 @@ template liftPrefix(_: type Result, operator: untyped) =
     else:
       T.failure(a.error)
 
-template liftInfix(_: type Result, operator: untyped) =
+template liftBinary(_: type Result, operator: untyped) =
 
   template `operator`*(a: ?!typed, b: ?!typed): ?!typed =
     type T = type(`operator`(a.unsafeGet, b.unsafeGet))
@@ -61,19 +54,20 @@ template liftInfix(_: type Result, operator: untyped) =
     else:
       T.failure(a.error)
 
-Result.liftPrefix(`-`)
-Result.liftPrefix(`+`)
-Result.liftPrefix(`@`)
-Result.liftInfix(`*`)
-Result.liftInfix(`/`)
-Result.liftInfix(`div`)
-Result.liftInfix(`mod`)
-Result.liftInfix(`shl`)
-Result.liftInfix(`shr`)
-Result.liftInfix(`+`)
-Result.liftInfix(`-`)
-Result.liftInfix(`&`)
-Result.liftInfix(`<=`)
-Result.liftInfix(`<`)
-Result.liftInfix(`>=`)
-Result.liftInfix(`>`)
+Result.liftUnary(`-`)
+Result.liftUnary(`+`)
+Result.liftUnary(`@`)
+Result.liftBinary(`[]`)
+Result.liftBinary(`*`)
+Result.liftBinary(`/`)
+Result.liftBinary(`div`)
+Result.liftBinary(`mod`)
+Result.liftBinary(`shl`)
+Result.liftBinary(`shr`)
+Result.liftBinary(`+`)
+Result.liftBinary(`-`)
+Result.liftBinary(`&`)
+Result.liftBinary(`<=`)
+Result.liftBinary(`<`)
+Result.liftBinary(`>=`)
+Result.liftBinary(`>`)

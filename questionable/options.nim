@@ -14,13 +14,6 @@ template `.?`*(option: ?typed, field: untyped{nkIdent}): ?untyped =
   else:
     T.none
 
-template `[]`*(option: ?typed, index: typed): ?typed =
-  type T = type option.get[index]
-  if option.isSome:
-    option.unsafeGet()[index].some
-  else:
-    T.none
-
 template `|?`*[T](option: ?T, fallback: T): T =
   if option.isSome:
     option.unsafeGet()
@@ -31,7 +24,7 @@ template `=?`*[T](name: untyped{nkIdent}, option: ?T): bool =
   template name: T {.used.} = option.unsafeGet()
   option.isSome
 
-template liftPrefix(_: type Option, operator: untyped) =
+template liftUnary(_: type Option, operator: untyped) =
 
   template `operator`*(a: ?typed): ?typed =
     type T {.used.} = type(`operator`(a.unsafeGet))
@@ -40,7 +33,7 @@ template liftPrefix(_: type Option, operator: untyped) =
     else:
       T.none
 
-template liftInfix(_: type Option, operator: untyped) =
+template liftBinary(_: type Option, operator: untyped) =
 
   template `operator`*(a: ?typed, b: ?typed): ?typed =
     type T = type(`operator`(a.unsafeGet, b.unsafeGet))
@@ -56,19 +49,20 @@ template liftInfix(_: type Option, operator: untyped) =
     else:
       T.none
 
-Option.liftPrefix(`-`)
-Option.liftPrefix(`+`)
-Option.liftPrefix(`@`)
-Option.liftInfix(`*`)
-Option.liftInfix(`/`)
-Option.liftInfix(`div`)
-Option.liftInfix(`mod`)
-Option.liftInfix(`shl`)
-Option.liftInfix(`shr`)
-Option.liftInfix(`+`)
-Option.liftInfix(`-`)
-Option.liftInfix(`&`)
-Option.liftInfix(`<=`)
-Option.liftInfix(`<`)
-Option.liftInfix(`>=`)
-Option.liftInfix(`>`)
+Option.liftUnary(`-`)
+Option.liftUnary(`+`)
+Option.liftUnary(`@`)
+Option.liftBinary(`[]`)
+Option.liftBinary(`*`)
+Option.liftBinary(`/`)
+Option.liftBinary(`div`)
+Option.liftBinary(`mod`)
+Option.liftBinary(`shl`)
+Option.liftBinary(`shr`)
+Option.liftBinary(`+`)
+Option.liftBinary(`-`)
+Option.liftBinary(`&`)
+Option.liftBinary(`<=`)
+Option.liftBinary(`<`)
+Option.liftBinary(`>=`)
+Option.liftBinary(`>`)
