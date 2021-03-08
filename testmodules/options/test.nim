@@ -1,4 +1,5 @@
 import std/unittest
+import std/sequtils
 import pkg/questionable
 
 suite "optionals":
@@ -85,3 +86,60 @@ suite "optionals":
     check 40.some < 42 == true.some
     check 40.some >= 42 == false.some
     check 40.some > 42 == false.some
+
+  test "examples from readme work":
+
+    var x: ?int
+
+    x = 42.some
+    x = int.none
+
+    # Option binding
+
+    x = 42.some
+
+    if y =? x:
+      check y == 42
+    else:
+      fail
+
+    x = int.none
+
+    if y =? x:
+      fail
+    else:
+      check not compiles(y)
+
+    # Option chaining
+
+    var numbers: ?seq[int]
+    var amount: ?int
+
+    numbers = @[1, 2, 3].some
+    amount = numbers.?len
+    check amount == 3.some
+
+    numbers = seq[int].none
+    amount = numbers.?len
+    check amount == int.none
+
+    numbers = @[1, 1, 2, 2, 2].some
+    amount = numbers.?deduplicate.?len
+    check amount == 2.some
+
+    # Fallback values
+
+    x = int.none
+
+    let z = x |? 3
+    check z == 3
+
+    # Operators
+
+    numbers = @[1, 2, 3].some
+    x = 39.some
+
+    let indexed = numbers[0]
+    check indexed == 1.some
+    let sum = x + 3
+    check sum == 42.some

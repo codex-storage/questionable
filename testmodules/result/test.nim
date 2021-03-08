@@ -1,4 +1,5 @@
 import std/unittest
+import std/sequtils
 import std/strutils
 import pkg/questionable/results
 
@@ -92,3 +93,35 @@ suite "result":
     check (40.success < 42 == true.success)
     check (40.success >= 42 == false.success)
     check (40.success > 42 == false.success)
+
+  test "examples from readme work":
+
+    proc works: ?!seq[int] =
+      @[1, 1, 2, 2, 2].success
+
+    proc fails: ?!seq[int] =
+      seq[int].failure newException(ValueError, "something went wrong")
+
+    # binding:
+    if x =? works():
+      check x == @[1, 1, 2, 2, 2]
+    else:
+      fail
+
+    # chaining:
+    let amount = works().?deduplicate.?len
+    check amount == 2.success
+
+    # fallback values:
+    let value = fails() |? @[]
+    check value == newSeq[int](0)
+
+    # lifted operators:
+    let sum = works()[3] + 40
+    check sum == 42.success
+
+    # catch
+    let x = parseInt("42").catch
+    check x == 42.success
+    let y = parseInt("XX").catch
+    check y.isErr
