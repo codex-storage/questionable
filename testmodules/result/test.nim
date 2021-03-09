@@ -130,3 +130,8 @@ suite "result":
     check x == 42.success
     let y = parseInt("XX").catch
     check y.isErr
+
+    # Conversion to Option
+
+    let converted = works().toOption
+    check converted == @[1, 1, 2, 2, 2].some
