@@ -1,6 +1,7 @@
 import std/unittest
 import std/sequtils
 import std/strutils
+import std/sugar
 import pkg/questionable
 import pkg/questionable/results
 
@@ -20,6 +21,21 @@ suite "result":
     check b.?len == int.failure error
     check a.?len.?uint8 == 2'u8.success
     check b.?len.?uint8 == uint8.failure error
+    check a.?len() == 2.success
+    check b.?len() == int.failure error
+    check a.?distribute(2).?len() == 2.success
+    check b.?distribute(2).?len() == int.failure error
+
+  test ".? chain can be followed by . calls and operators":
+    let a = @[41, 42].success
+    check (a.?len.get == 2)
+    check (a.?len.get.uint8.uint64 == 2'u64)
+    check (a.?len.get() == 2)
+    check (a.?len.get().uint8.uint64 == 2'u64)
+    check (a.?deduplicate()[0].?uint8.?uint64 == 41'u64.success)
+    check (a.?len + 1 == 3.success)
+    check (a.?deduplicate()[0] + 1 == 42.success)
+    check (a.?deduplicate.map(x => x) == @[41, 42].success)
 
   test "[] can be used for indexing optionals":
     let a: ?!seq[int] = @[1, 2, 3].success
@@ -115,23 +131,23 @@ suite "result":
 
     # chaining:
     let amount = works().?deduplicate.?len
-    check amount == 2.success
+    check (amount == 2.success)
 
     # fallback values:
     let value = fails() |? @[]
-    check value == newSeq[int](0)
+    check (value == newSeq[int](0))
 
     # lifted operators:
     let sum = works()[3] + 40
-    check sum == 42.success
+    check (sum == 42.success)
 
     # catch
     let x = parseInt("42").catch
-    check x == 42.success
+    check (x == 42.success)
     let y = parseInt("XX").catch
     check y.isErr
 
     # Conversion to Option
 
     let converted = works().toOption
-    check converted == @[1, 1, 2, 2, 2].some
+    check (converted == @[1, 1, 2, 2, 2].some)

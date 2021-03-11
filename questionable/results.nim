@@ -1,5 +1,6 @@
-import ./options
 import ./resultsbase
+import ./options
+import ./operators
 
 include ./errorban
 
@@ -8,18 +9,27 @@ export resultsbase
 template `?!`*(T: typed): type Result[T, ref CatchableError] =
   Result[T, ref CatchableError]
 
-template success*[T](value: T): ?!T =
+proc success*[T](value: T): ?!T =
   ok(?!T, value)
 
-template failure*(T: type, error: ref CatchableError): ?!T =
+proc failure*(T: type, error: ref CatchableError): ?!T =
   err(?!T, error)
 
-template `.?`*(value: ?!typed, field: untyped{nkIdent}): ?!untyped =
-  type T = type value.get.field
-  if value.isOk:
-    ok(?!T, value.unsafeGet().field)
+template `->?`*(option: ?!typed, expression: untyped): untyped =
+  type T = type expression
+  if option.isErr:
+    T.failure(option.error)
   else:
-    err(?!T, error(value))
+    expression.success
+
+template `->?`*(options: (?!typed, ?!typed), expression: untyped): untyped =
+  type T = type expression
+  if options[0].isErr:
+    T.failure(options[0].error)
+  elif options[1].isErr:
+    T.failure(options[1].error)
+  else:
+    expression.success
 
 template `|?`*[T](value: ?!T, fallback: T): T =
   value.valueOr(fallback)
@@ -33,33 +43,6 @@ proc toOption*[T,E](value: Result[T,E]): ?T =
     value.unsafeGet.some
   else:
     T.none
-
-template liftUnary(_: type Result, operator: untyped) =
-
-  template `operator`*(a: ?!typed): ?!typed =
-    type T {.used.} = type(`operator`(a.unsafeGet))
-    if x =? a:
-      `operator`(x).success
-    else:
-      T.failure(a.error)
-
-template liftBinary(_: type Result, operator: untyped) =
-
-  template `operator`*(a: ?!typed, b: ?!typed): ?!typed =
-    type T = type(`operator`(a.unsafeGet, b.unsafeGet))
-    if x =? a and y =? b:
-      `operator`(x, y).success
-    elif a.isErr:
-      T.failure(a.error)
-    else:
-      T.failure(b.error)
-
-  template `operator`*(a: ?!typed, b: typed): ?!typed =
-    type T = type(`operator`(a.unsafeGet, b))
-    if x =? a:
-      `operator`(x, b).success
-    else:
-      T.failure(a.error)
 
 Result.liftUnary(`-`)
 Result.liftUnary(`+`)
