@@ -65,27 +65,29 @@ else:
 
 ### Option chaining
 
-To safely access fields and call procs, you can use the `.?` operator:
+To safely access fields and call procs, you can use the `?.` operator:
+
+> Note: before version 0.3.0, the operator was `.?` instead of `?.`
 
 ```nim
 var numbers: ?seq[int]
 var amount: ?int
 
 numbers = @[1, 2, 3].some
-amount = numbers.?len
+amount = numbers?.len
 # amount now holds the integer 3
 
 numbers = seq[int].none
-amount = numbers.?len
+amount = numbers?.len
 # amount now equals int.none
 ```
 
-Invocations of the `.?` operator can be chained:
+Invocations of the `?.` operator can be chained:
 ```nim
 import sequtils
 
 numbers = @[1, 1, 2, 2, 2].some
-amount = numbers.?deduplicate.?len
+amount = numbers?.deduplicate?.len
 # amount now holds the integer 2
 ```
 
@@ -147,7 +149,7 @@ proc fails: ?!seq[int] =
 
 ### Binding, chaining, fallbacks and operators
 
-Binding with the `=?` operator, chaining with the `.?` operator, fallbacks with
+Binding with the `=?` operator, chaining with the `?.` operator, fallbacks with
 the `|?` operator, and all the other operators that work with Options also work
 for Results:
 ```nim
@@ -158,7 +160,7 @@ if x =? works():
   # use x
 
 # chaining:
-let amount = works().?deduplicate.?len
+let amount = works()?.deduplicate?.len
 
 # fallback values:
 let value = fails() |? @[]

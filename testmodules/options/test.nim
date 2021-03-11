@@ -10,28 +10,28 @@ suite "optionals":
     check (?string is Option[string])
     check (?seq[bool] is Option[seq[bool]])
 
-  test ".? can be used for chaining optionals":
+  test "?. can be used for chaining optionals":
     let a: ?seq[int] = @[41, 42].some
     let b: ?seq[int] = seq[int].none
-    check a.?len == 2.some
-    check b.?len == int.none
-    check a.?len.?uint8 == 2'u8.some
-    check b.?len.?uint8 == uint8.none
-    check a.?len() == 2.some
-    check b.?len() == int.none
-    check a.?distribute(2).?len() == 2.some
-    check b.?distribute(2).?len() == int.none
+    check a?.len == 2.some
+    check b?.len == int.none
+    check a?.len?.uint8 == 2'u8.some
+    check b?.len?.uint8 == uint8.none
+    check a?.len() == 2.some
+    check b?.len() == int.none
+    check a?.distribute(2)?.len() == 2.some
+    check b?.distribute(2)?.len() == int.none
 
-  test ".? chain can be followed by . calls and operators":
+  test "?. chain can be followed by . calls and operators":
     let a = @[41, 42].some
-    check a.?len.get == 2
-    check a.?len.get.uint8.uint64 == 2'u64
-    check a.?len.get() == 2
-    check a.?len.get().uint8.uint64 == 2'u64
-    check a.?deduplicate()[0].?uint8.?uint64 == 41'u64.some
-    check a.?len + 1 == 3.some
-    check a.?deduplicate()[0] + 1 == 42.some
-    check a.?deduplicate.map(x => x) == @[41, 42].some
+    check a?.len.get == 2
+    check a?.len.get.uint8.uint64 == 2'u64
+    check a?.len.get() == 2
+    check a?.len.get().uint8.uint64 == 2'u64
+    check a?.deduplicate()[0]?.uint8?.uint64 == 41'u64.some
+    check a?.len + 1 == 3.some
+    check a?.deduplicate()[0] + 1 == 42.some
+    check a?.deduplicate.map(x => x) == @[41, 42].some
 
   test "[] can be used for indexing optionals":
     let a: ?seq[int] = @[1, 2, 3].some
@@ -132,15 +132,15 @@ suite "optionals":
     var amount: ?int
 
     numbers = @[1, 2, 3].some
-    amount = numbers.?len
+    amount = numbers?.len
     check amount == 3.some
 
     numbers = seq[int].none
-    amount = numbers.?len
+    amount = numbers?.len
     check amount == int.none
 
     numbers = @[1, 1, 2, 2, 2].some
-    amount = numbers.?deduplicate.?len
+    amount = numbers?.deduplicate?.len
     check amount == 2.some
 
     # Fallback values

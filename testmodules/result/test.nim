@@ -14,28 +14,28 @@ suite "result":
     check (?!string is Result[string, ref CatchableError])
     check (?!seq[bool] is Result[seq[bool], ref CatchableError])
 
-  test ".? can be used for chaining results":
+  test "?. can be used for chaining results":
     let a: ?!seq[int] = @[41, 42].success
     let b: ?!seq[int] = seq[int].failure error
-    check a.?len == 2.success
-    check b.?len == int.failure error
-    check a.?len.?uint8 == 2'u8.success
-    check b.?len.?uint8 == uint8.failure error
-    check a.?len() == 2.success
-    check b.?len() == int.failure error
-    check a.?distribute(2).?len() == 2.success
-    check b.?distribute(2).?len() == int.failure error
+    check a?.len == 2.success
+    check b?.len == int.failure error
+    check a?.len?.uint8 == 2'u8.success
+    check b?.len?.uint8 == uint8.failure error
+    check a?.len() == 2.success
+    check b?.len() == int.failure error
+    check a?.distribute(2)?.len() == 2.success
+    check b?.distribute(2)?.len() == int.failure error
 
-  test ".? chain can be followed by . calls and operators":
+  test "?. chain can be followed by . calls and operators":
     let a = @[41, 42].success
-    check (a.?len.get == 2)
-    check (a.?len.get.uint8.uint64 == 2'u64)
-    check (a.?len.get() == 2)
-    check (a.?len.get().uint8.uint64 == 2'u64)
-    check (a.?deduplicate()[0].?uint8.?uint64 == 41'u64.success)
-    check (a.?len + 1 == 3.success)
-    check (a.?deduplicate()[0] + 1 == 42.success)
-    check (a.?deduplicate.map(x => x) == @[41, 42].success)
+    check (a?.len.get == 2)
+    check (a?.len.get.uint8.uint64 == 2'u64)
+    check (a?.len.get() == 2)
+    check (a?.len.get().uint8.uint64 == 2'u64)
+    check (a?.deduplicate()[0]?.uint8?.uint64 == 41'u64.success)
+    check (a?.len + 1 == 3.success)
+    check (a?.deduplicate()[0] + 1 == 42.success)
+    check (a?.deduplicate.map(x => x) == @[41, 42].success)
 
   test "[] can be used for indexing optionals":
     let a: ?!seq[int] = @[1, 2, 3].success
@@ -130,7 +130,7 @@ suite "result":
       fail
 
     # chaining:
-    let amount = works().?deduplicate.?len
+    let amount = works()?.deduplicate?.len
     check (amount == 2.success)
 
     # fallback values:
