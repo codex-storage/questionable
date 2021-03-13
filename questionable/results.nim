@@ -38,7 +38,7 @@ template `=?`*[T](name: untyped{nkIdent}, value: ?!T): bool =
   template name: T {.used.} = value.unsafeGet()
   value.isOk
 
-proc toOption*[T,E](value: Result[T,E]): ?T =
+proc option*[T,E](value: Result[T,E]): ?T =
   if value.isOk:
     value.unsafeGet.some
   else:

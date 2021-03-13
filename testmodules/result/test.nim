@@ -112,8 +112,8 @@ suite "result":
     check (40.success > 42 == false.success)
 
   test "Result can be converted to Option":
-    check 42.success.toOption == 42.some
-    check int.failure(error).toOption == int.none
+    check 42.success.option == 42.some
+    check int.failure(error).option == int.none
 
   test "examples from readme work":
 
@@ -149,5 +149,5 @@ suite "result":
 
     # Conversion to Option
 
-    let converted = works().toOption
+    let converted = works().option
     check (converted == @[1, 1, 2, 2, 2].some)

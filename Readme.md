@@ -186,7 +186,7 @@ let y = parseInt("XX").catch  # equals int.failure(..)
 Any Result can be converted to an Option:
 
 ```nim
-let converted = works().toOption  # equals @[1, 1, 2, 2, 2].some
+let converted = works().option  # equals @[1, 1, 2, 2, 2].some
 ```
 
 Banning Errors
