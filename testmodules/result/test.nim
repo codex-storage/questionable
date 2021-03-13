@@ -51,19 +51,19 @@ suite "result":
 
   test "=? can be used for optional binding":
     if a =? int.failure(error):
-      check false
+      fail
 
     if b =? 42.success:
       check b == 42
     else:
-      check false
+      fail
 
     while a =? 42.success:
       check a == 42
       break
 
     while a =? int.failure(error):
-      check false
+      fail
       break
 
   test "=? can appear multiple times in conditional expression":
@@ -71,7 +71,7 @@ suite "result":
       check a == 42
       check b == "foo"
     else:
-      check false
+      fail
 
   test "=? works with variable hiding":
     let a = 42.success
