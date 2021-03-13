@@ -10,19 +10,17 @@ export chaining
 template `?`*(T: typed): type Option[T] =
   Option[T]
 
-template `->?`*(option: ?typed, expression: untyped): untyped =
-  type T = type expression
+template `->?`*[T,U](option: ?T, expression: U): ?U =
   if option.isSome:
     expression.some
   else:
-    T.none
+    U.none
 
-template `->?`*(options: (?typed, ?typed), expression: untyped): untyped =
-  type T = type expression
+template `->?`*[T,U,V](options: (?T, ?U), expression: V): ?V =
   if options[0].isSome and options[1].isSome:
     expression.some
   else:
-    T.none
+    V.none
 
 template `=?`*[T](name: untyped{nkIdent}, option: ?T): bool =
   template name: T {.used.} = option.unsafeGet()

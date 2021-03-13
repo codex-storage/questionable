@@ -15,19 +15,17 @@ proc success*[T](value: T): ?!T =
 proc failure*(T: type, error: ref CatchableError): ?!T =
   err(?!T, error)
 
-template `->?`*(option: ?!typed, expression: untyped): untyped =
-  type T = type expression
-  if option.isErr:
-    T.failure(option.error)
+template `->?`*[T,U](value: ?!T, expression: U): ?!U =
+  if value.isErr:
+    U.failure(value.error)
   else:
     expression.success
 
-template `->?`*(options: (?!typed, ?!typed), expression: untyped): untyped =
-  type T = type expression
-  if options[0].isErr:
-    T.failure(options[0].error)
-  elif options[1].isErr:
-    T.failure(options[1].error)
+template `->?`*[T,U,V](values: (?!T, ?!U), expression: V): ?!V =
+  if values[0].isErr:
+    V.failure(values[0].error)
+  elif values[1].isErr:
+    V.failure(values[1].error)
   else:
     expression.success
 
