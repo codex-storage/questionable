@@ -6,6 +6,8 @@ include ./errorban
 
 export resultsbase
 
+type ResultFailure* = object of CatchableError
+
 template `?!`*(T: typed): type Result[T, ref CatchableError] =
   Result[T, ref CatchableError]
 
@@ -14,6 +16,9 @@ proc success*[T](value: T): ?!T =
 
 proc failure*(T: type, error: ref CatchableError): ?!T =
   err(?!T, error)
+
+proc failure*(T: type, message: string): ?!T =
+  T.failure newException(ResultFailure, message)
 
 template `->?`*[T,U](value: ?!T, expression: U): ?!U =
   if value.isErr:

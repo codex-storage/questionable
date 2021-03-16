@@ -82,6 +82,11 @@ suite "result":
     check parseInt("42").catch == 42.success
     check parseInt("foo").catch.error of ValueError
 
+  test "failure can be called with string argument":
+    let value = int.failure("some failure")
+    check value.error of ResultFailure
+    check value.error.msg == "some failure"
+
   test "unary operator `-` works for results":
     check -(-42.success) == 42.success
     check -(int.failure(error)) == int.failure(error)
