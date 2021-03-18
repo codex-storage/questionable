@@ -1,5 +1,6 @@
 import std/unittest
 import std/sequtils
+import std/tables
 import std/sugar
 import pkg/questionable
 
@@ -86,6 +87,25 @@ suite "optionals":
 
     if var a =? int.none:
       fail
+
+  test "?[] can be used for indexing tables without raising KeyError":
+    let table = @{"a": 1, "b": 2}.toTable
+    check table?["a"] == 1.some
+    check table?["c"] == int.none
+
+  test "?[] can be followed by calls, operators and indexing":
+    let table = @{"a": @[41, 42]}.toTable
+    check table?["a"].isSome
+    check table?["a"].isSome()
+    check table?["a"][0] == 41.some
+    check table?["a"]?.len.get == 2
+    check table?["a"]?.len.get.uint8.uint64 == 2'u64
+    check table?["a"]?.len.get() == 2
+    check table?["a"]?.len.get().uint8.uint64 == 2'u64
+    check table?["a"]?.deduplicate()[0]?.uint8?.uint64 == 41'u64.some
+    check table?["a"]?.len + 1 == 3.some
+    check table?["a"]?.deduplicate()[0] + 1 == 42.some
+    check table?["a"]?.deduplicate.map(x => x) == @[41, 42].some
 
   test "=? evaluates optional expression only once":
     var count = 0

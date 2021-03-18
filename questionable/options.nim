@@ -1,12 +1,14 @@
 import std/options
 import std/macros
 import ./chaining
+import ./indexing
 import ./operators
 
 include ./errorban
 
 export options
 export chaining
+export indexing
 
 template `?`*(T: typed): type Option[T] =
   Option[T]
