@@ -91,6 +91,17 @@ suite "result":
     if var a =? int.failure(error):
       fail
 
+  test "=? evaluates optional expression only once":
+    var count = 0
+    if a =? (inc count; 42.success):
+      let b {.used.} = a
+    check count == 1
+
+    count = 0
+    if var a =? (inc count; 42.success):
+      let b {.used.} = a
+    check count == 1
+
   test "catch can be used to convert exceptions to results":
     check parseInt("42").catch == 42.success
     check parseInt("foo").catch.error of ValueError

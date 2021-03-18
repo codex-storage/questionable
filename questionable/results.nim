@@ -38,17 +38,19 @@ template `->?`*[T,U,V](values: (?!T, ?!U), expression: V): ?!V =
 template `|?`*[T](value: ?!T, fallback: T): T =
   value.valueOr(fallback)
 
-template `=?`*[T](name: untyped{nkIdent}, value: ?!T): bool =
+template `=?`*[T](name: untyped{nkIdent}, expression: ?!T): bool =
+  let value = expression
   template name: T {.used.} = value.unsafeGet()
   value.isOk
 
-macro `=?`*[T](variable: untyped{nkVarTy}, option: ?!T): bool =
+macro `=?`*[T](variable: untyped{nkVarTy}, expression: ?!T): bool =
   let name = variable[0]
   quote do:
-    var `name` : typeof(`option`.unsafeGet())
-    if `option`.isOk:
-      `name` = `option`.unsafeGet()
-    `option`.isOk
+    let value = `expression`
+    var `name` : typeof(value.unsafeGet())
+    if value.isOk:
+      `name` = value.unsafeGet()
+    value.isOk
 
 proc option*[T,E](value: Result[T,E]): ?T =
   if value.isOk:

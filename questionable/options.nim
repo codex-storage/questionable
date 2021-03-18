@@ -23,17 +23,19 @@ template `->?`*[T,U,V](options: (?T, ?U), expression: V): ?V =
   else:
     V.none
 
-template `=?`*[T](name: untyped{nkIdent}, option: ?T): bool =
+template `=?`*[T](name: untyped{nkIdent}, expression: ?T): bool =
+  let option = expression
   template name: T {.used.} = option.unsafeGet()
   option.isSome
 
-macro `=?`*[T](variable: untyped{nkVarTy}, option: ?T): bool =
+macro `=?`*[T](variable: untyped{nkVarTy}, expression: ?T): bool =
   let name = variable[0]
   quote do:
-    var `name` : typeof(`option`.unsafeGet())
-    if `option`.isSome:
-      `name` = `option`.unsafeGet()
-    `option`.isSome
+    let option = `expression`
+    var `name` : typeof(option.unsafeGet())
+    if option.isSome:
+      `name` = option.unsafeGet()
+    option.isSome
 
 template `|?`*[T](option: ?T, fallback: T): T =
   if option.isSome:

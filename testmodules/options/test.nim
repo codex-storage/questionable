@@ -87,6 +87,17 @@ suite "optionals":
     if var a =? int.none:
       fail
 
+  test "=? evaluates optional expression only once":
+    var count = 0
+    if a =? (inc count; 42.some):
+      let b {.used.} = a
+    check count == 1
+
+    count = 0
+    if var a =? (inc count; 42.some):
+      let b {.used.} = a
+    check count == 1
+
   test "unary operator `-` works for options":
     check -(-42.some) == 42.some
     check -(int.none) == int.none
