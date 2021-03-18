@@ -74,6 +74,19 @@ suite "optionals":
     if a =? a:
       check a == 42
 
+  test "=? works with var":
+    if var a =? 1.some and var b =? 2.some:
+      check a == 1
+      inc a
+      check a == b
+      inc b
+      check b == 3
+    else:
+      fail
+
+    if var a =? int.none:
+      fail
+
   test "unary operator `-` works for options":
     check -(-42.some) == 42.some
     check -(int.none) == int.none

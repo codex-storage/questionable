@@ -1,4 +1,5 @@
 import std/options
+import std/macros
 import ./chaining
 import ./operators
 
@@ -25,6 +26,14 @@ template `->?`*[T,U,V](options: (?T, ?U), expression: V): ?V =
 template `=?`*[T](name: untyped{nkIdent}, option: ?T): bool =
   template name: T {.used.} = option.unsafeGet()
   option.isSome
+
+macro `=?`*[T](variable: untyped{nkVarTy}, option: ?T): bool =
+  let name = variable[0]
+  quote do:
+    var `name` : typeof(`option`.unsafeGet())
+    if `option`.isSome:
+      `name` = `option`.unsafeGet()
+    `option`.isSome
 
 template `|?`*[T](option: ?T, fallback: T): T =
   if option.isSome:

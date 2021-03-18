@@ -1,3 +1,4 @@
+import std/macros
 import ./resultsbase
 import ./options
 import ./operators
@@ -40,6 +41,14 @@ template `|?`*[T](value: ?!T, fallback: T): T =
 template `=?`*[T](name: untyped{nkIdent}, value: ?!T): bool =
   template name: T {.used.} = value.unsafeGet()
   value.isOk
+
+macro `=?`*[T](variable: untyped{nkVarTy}, option: ?!T): bool =
+  let name = variable[0]
+  quote do:
+    var `name` : typeof(`option`.unsafeGet())
+    if `option`.isOk:
+      `name` = `option`.unsafeGet()
+    `option`.isOk
 
 proc option*[T,E](value: Result[T,E]): ?T =
   if value.isOk:

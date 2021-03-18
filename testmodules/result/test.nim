@@ -78,6 +78,19 @@ suite "result":
     if a =? a:
       check a == 42
 
+  test "=? works with var":
+    if var a =? 1.success and var b =? 2.success:
+      check a == 1
+      inc a
+      check a == b
+      inc b
+      check b == 3
+    else:
+      fail
+
+    if var a =? int.failure(error):
+      fail
+
   test "catch can be used to convert exceptions to results":
     check parseInt("42").catch == 42.success
     check parseInt("foo").catch.error of ValueError
