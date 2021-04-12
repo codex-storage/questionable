@@ -189,20 +189,6 @@ Any Result can be converted to an Option:
 let converted = works().option  # equals @[1, 1, 2, 2, 2].some
 ```
 
-Banning Errors
---------------
-
-Should you decide to use Options and Results instead of the standard exception
-handling in Nim, you may want to check that your procs are not accidently
-raising errors. You can use the following include for this:
-
-```nim
-include questionable/errorban
-```
-
-Proc definitions below the error ban are checked by the compiler to ensure that
-they do not raise errors.
-
 [1]: https://nim-lang.org/docs/options.html
 [2]: https://github.com/arnetheduck/nim-result
 [3]: https://github.com/nim-lang/nimble
