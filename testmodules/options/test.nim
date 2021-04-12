@@ -105,6 +105,17 @@ suite "optionals":
       let b {.used.} = a
     check count == 1
 
+  test "=? works in generic code with mixin statement":
+    proc toString[T](option: ?T): string =
+      if value =? option:
+        mixin value
+        $value
+      else:
+        "none"
+
+    check 42.some.toString == "42"
+    check int.none.toString == "none"
+
   test ".?[] can be used for indexing tables without raising KeyError":
     let table = @{"a": 1, "b": 2}.toTable
     check table.?["a"] == 1.some
