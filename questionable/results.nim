@@ -15,6 +15,9 @@ template `?!`*(T: typed): type Result[T, ref CatchableError] =
 proc success*[T](value: T): ?!T =
   ok(?!T, value)
 
+proc success*: ?!void =
+  ok(?!void)
+
 proc failure*(T: type, error: ref CatchableError): ?!T =
   err(?!T, error)
 

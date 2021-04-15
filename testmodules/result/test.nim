@@ -112,6 +112,9 @@ suite "result":
     check parseInt("42").catch == 42.success
     check parseInt("foo").catch.error of ValueError
 
+  test "success can be called without argument":
+    check (success() is ?!void)
+
   test "failure can be called with string argument":
     let value = int.failure("some failure")
     check value.error of ResultFailure
