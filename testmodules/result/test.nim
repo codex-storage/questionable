@@ -193,3 +193,21 @@ suite "result":
 
     let converted = works().option
     check (converted == @[1, 1, 2, 2, 2].some)
+
+import pkg/questionable/resultsbase
+
+suite "result compatibility":
+
+  test "|?, =? and .option work on other types of Result":
+    type R = Result[int, string]
+    let good = R.ok 42
+    let bad = R.err "error"
+
+    check bad |? 43 == 43
+
+    if value =? good:
+      check value == 42
+    else:
+      fail
+
+    check good.option == 42.some

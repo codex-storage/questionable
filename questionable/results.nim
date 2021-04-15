@@ -47,25 +47,30 @@ template `->?`*[T,U,V](values: (?!T, ?!U), expression: V): ?!V =
   else:
     expression.success
 
-template `|?`*[T](value: ?!T, fallback: T): T =
+template `|?`*[T,E](value: Result[T,E], fallback: T): T =
   value.valueOr(fallback)
 
-template `=?`*[T](name: untyped{nkIdent}, expression: ?!T): bool =
-  let value = expression
-  template name: T {.used.} = value.unsafeGet()
-  value.isSuccess
-
-macro `=?`*[T](variable: untyped{nkVarTy}, expression: ?!T): bool =
-  let name = variable[0]
+macro `=?`*[T,E](name: untyped{nkIdent}, expression: Result[T,E]): bool =
+  let unsafeGet = bindSym"unsafeGet"
+  let isOk = bindSym"isOk"
   quote do:
     let value = `expression`
-    var `name` : typeof(value.unsafeGet())
-    if value.isSuccess:
-      `name` = value.unsafeGet()
-    value.isSuccess
+    template `name`: T {.used.} = value.`unsafeGet`()
+    `isOk`(value)
+
+macro `=?`*[T,E](variable: untyped{nkVarTy}, expression: Result[T,E]): bool =
+  let name = variable[0]
+  let unsafeGet = bindSym"unsafeGet"
+  let isOk = bindSym"isOk"
+  quote do:
+    let value = `expression`
+    var `name` : typeof(value.`unsafeGet`())
+    if `isOk`(value):
+      `name` = value.`unsafeGet`()
+    `isOk`(value)
 
 proc option*[T,E](value: Result[T,E]): ?T =
-  if value.isSuccess:
+  if value.isOk:
     value.unsafeGet.some
   else:
     T.none
