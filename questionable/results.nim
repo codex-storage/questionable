@@ -21,6 +21,12 @@ proc failure*(T: type, error: ref CatchableError): ?!T =
 proc failure*(T: type, message: string): ?!T =
   T.failure newException(ResultFailure, message)
 
+template failure*(error: ref CatchableError): auto =
+  err error
+
+template failure*(message: string): auto =
+  failure newException(ResultFailure, message)
+
 proc isSuccess*[T](value: ?!T): bool =
   value.isOk
 

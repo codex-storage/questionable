@@ -146,16 +146,16 @@ proc example: ?!int =
   # either return an integer or an error
 ```
 
-Assigning values is done using the `success` and `failure` procs:
+Results can be made using the `success` and `failure` procs:
 
 ```nim
 proc works: ?!seq[int] =
   # always returns a Result holding a sequence
-  @[1, 1, 2, 2, 2].success
+  success @[1, 1, 2, 2, 2]
 
 proc fails: ?!seq[int] =
-  # always returns a Result holding a ValueError
-  seq[int].failure newException(ValueError, "something went wrong")
+  # always returns a Result holding an error
+  failure "something went wrong"
 ```
 
 ### Binding, chaining, fallbacks and operators

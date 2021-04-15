@@ -150,13 +150,20 @@ suite "result":
     check 42.success.option == 42.some
     check int.failure(error).option == int.none
 
+  test "failure can be used without type parameter in procs":
+    proc fails: ?!int =
+      failure "some error"
+
+    check fails().isFailure
+    check fails().error.msg == "some error"
+
   test "examples from readme work":
 
     proc works: ?!seq[int] =
-      @[1, 1, 2, 2, 2].success
+      success @[1, 1, 2, 2, 2]
 
     proc fails: ?!seq[int] =
-      seq[int].failure newException(ValueError, "something went wrong")
+      failure "something went wrong"
 
     # binding:
     if x =? works():
