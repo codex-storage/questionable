@@ -5,7 +5,7 @@ import ./operators
 
 include ./errorban
 
-export resultsbase
+export resultsbase except ok, err, isOk, isErr
 
 type ResultFailure* = object of CatchableError
 
@@ -21,16 +21,22 @@ proc failure*(T: type, error: ref CatchableError): ?!T =
 proc failure*(T: type, message: string): ?!T =
   T.failure newException(ResultFailure, message)
 
+proc isSuccess*[T](value: ?!T): bool =
+  value.isOk
+
+proc isFailure*[T](value: ?!T): bool =
+  value.isErr
+
 template `->?`*[T,U](value: ?!T, expression: U): ?!U =
-  if value.isErr:
+  if value.isFailure:
     U.failure(value.error)
   else:
     expression.success
 
 template `->?`*[T,U,V](values: (?!T, ?!U), expression: V): ?!V =
-  if values[0].isErr:
+  if values[0].isFailure:
     V.failure(values[0].error)
-  elif values[1].isErr:
+  elif values[1].isFailure:
     V.failure(values[1].error)
   else:
     expression.success
@@ -41,19 +47,19 @@ template `|?`*[T](value: ?!T, fallback: T): T =
 template `=?`*[T](name: untyped{nkIdent}, expression: ?!T): bool =
   let value = expression
   template name: T {.used.} = value.unsafeGet()
-  value.isOk
+  value.isSuccess
 
 macro `=?`*[T](variable: untyped{nkVarTy}, expression: ?!T): bool =
   let name = variable[0]
   quote do:
     let value = `expression`
     var `name` : typeof(value.unsafeGet())
-    if value.isOk:
+    if value.isSuccess:
       `name` = value.unsafeGet()
-    value.isOk
+    value.isSuccess
 
 proc option*[T,E](value: Result[T,E]): ?T =
-  if value.isOk:
+  if value.isSuccess:
     value.unsafeGet.some
   else:
     T.none

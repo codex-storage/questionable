@@ -180,7 +180,7 @@ suite "result":
     let x = parseInt("42").catch
     check (x == 42.success)
     let y = parseInt("XX").catch
-    check y.isErr
+    check y.isFailure
 
     # Conversion to Option
 
