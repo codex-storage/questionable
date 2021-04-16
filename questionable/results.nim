@@ -4,12 +4,14 @@ import ./options
 import ./chaining
 import ./indexing
 import ./operators
+import ./without
 
 include ./errorban
 
 export resultsbase except ok, err, isOk, isErr
 export chaining
 export indexing
+export without
 
 type ResultFailure* = object of CatchableError
 

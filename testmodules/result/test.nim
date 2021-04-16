@@ -108,6 +108,21 @@ suite "result":
       let b {.used.} = a
     check count == 1
 
+  test "without statement works for results":
+    proc test1 =
+      without a =? 42.success:
+        fail
+        return
+      check a == 42
+
+    proc test2 =
+      without a =? int.failure "error":
+        return
+      fail
+
+    test1()
+    test2()
+
   test "catch can be used to convert exceptions to results":
     check parseInt("42").catch == 42.success
     check parseInt("foo").catch.error of ValueError

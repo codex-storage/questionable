@@ -116,6 +116,30 @@ suite "optionals":
     check 42.some.toString == "42"
     check int.none.toString == "none"
 
+  test "without statement can be used for early returns":
+    proc test1 =
+      without a =? 42.some:
+        fail
+        return
+      check a == 42
+
+    proc test2 =
+      without a =? int.none:
+        return
+      fail
+
+    test1()
+    test2()
+
+  test "without statement evaluates optional expression only once":
+    proc test =
+      var count = 0
+      without a =? (inc count; 42.some):
+        discard
+      check count == 1
+
+    test()
+
   test ".?[] can be used for indexing tables without raising KeyError":
     let table = @{"a": 1, "b": 2}.toTable
     check table.?["a"] == 1.some
@@ -193,6 +217,18 @@ suite "optionals":
       fail
     else:
       check not compiles(y)
+
+    # without statement
+
+    proc someProc(option: ?int) =
+      without value =? option:
+        check option.isNone
+        return
+
+      check value == 42
+
+    someProc(int.none)
+    someProc(42.some)
 
     # Option chaining
 

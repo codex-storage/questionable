@@ -63,6 +63,18 @@ else:
   # this is reached, and y is not defined
 ```
 
+The `without` statement can be used to place guards that ensure that an optional
+contains a value:
+
+```nim
+proc someProc(option: ?int) =
+  without value =? option:
+    # option did not contain a value
+    return
+
+  # use value
+```
+
 When using `=?` in generic code you may face errors about undeclared
 identifiers. This is a limitation of Nim and can be worked around with a `mixin`
 statement:
