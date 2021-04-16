@@ -1,11 +1,15 @@
 import std/macros
 import ./resultsbase
 import ./options
+import ./chaining
+import ./indexing
 import ./operators
 
 include ./errorban
 
 export resultsbase except ok, err, isOk, isErr
+export chaining
+export indexing
 
 type ResultFailure* = object of CatchableError
 
