@@ -230,6 +230,15 @@ suite "optionals":
     someProc(int.none)
     someProc(42.some)
 
+    # generics
+
+    proc genericProc[T](option: ?T) =
+      if value =? option:
+        mixin value
+        check value == 42
+
+    genericProc(42.some)
+
     # Option chaining
 
     var numbers: ?seq[int]
