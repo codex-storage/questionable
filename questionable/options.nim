@@ -21,9 +21,21 @@ template `->?`*[T,U](option: ?T, expression: U): ?U =
   else:
     U.none
 
+template `->?`*[T,U](option: ?T, expression: ?U): ?U =
+  if option.isSome:
+    expression
+  else:
+    U.none
+
 template `->?`*[T,U,V](options: (?T, ?U), expression: V): ?V =
   if options[0].isSome and options[1].isSome:
     expression.some
+  else:
+    V.none
+
+template `->?`*[T,U,V](options: (?T, ?U), expression: ?V): ?V =
+  if options[0].isSome and options[1].isSome:
+    expression
   else:
     V.none
 

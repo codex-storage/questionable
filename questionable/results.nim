@@ -48,6 +48,12 @@ template `->?`*[T,U](value: ?!T, expression: U): ?!U =
   else:
     expression.success
 
+template `->?`*[T,U](value: ?!T, expression: ?!U): ?!U =
+  if value.isFailure:
+    U.failure(value.error)
+  else:
+    expression
+
 template `->?`*[T,U,V](values: (?!T, ?!U), expression: V): ?!V =
   if values[0].isFailure:
     V.failure(values[0].error)
@@ -55,6 +61,14 @@ template `->?`*[T,U,V](values: (?!T, ?!U), expression: V): ?!V =
     V.failure(values[1].error)
   else:
     expression.success
+
+template `->?`*[T,U,V](values: (?!T, ?!U), expression: ?!V): ?!V =
+  if values[0].isFailure:
+    V.failure(values[0].error)
+  elif values[1].isFailure:
+    V.failure(values[1].error)
+  else:
+    expression
 
 template `|?`*[T,E](value: Result[T,E], fallback: T): T =
   value.valueOr(fallback)

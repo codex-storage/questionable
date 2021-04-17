@@ -192,6 +192,23 @@ suite "optionals":
     check 40.some >= 42 == false.some
     check 40.some > 42 == false.some
 
+  test ".? avoids wrapping option in option":
+    let a = 41.some
+
+    proc b(x: int): ?int =
+      some x + 1
+
+    check a.?b == 42.some
+
+  test "lifted operators avoid wrapping option in option":
+    let a = 40.some
+    let b = 2.some
+
+    func `&`(x, y: int): ?int =
+      some x + y
+
+    check (a & b) == 42.some
+
   test "examples from readme work":
 
     var x: ?int

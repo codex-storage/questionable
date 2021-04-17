@@ -175,6 +175,23 @@ suite "result":
     check fails().isFailure
     check fails().error.msg == "some error"
 
+  test ".? avoids wrapping result in result":
+    let a = 41.success
+
+    proc b(x: int): ?!int =
+      success x + 1
+
+    check a.?b == 42.success
+
+  test "lifted operators avoid wrapping result in result":
+    let a = 40.success
+    let b = 2.success
+
+    func `&`(x, y: int): ?!int =
+      success x + y
+
+    check (a & b) == 42.success
+
   test "examples from readme work":
 
     proc works: ?!seq[int] =
