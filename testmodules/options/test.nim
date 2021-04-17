@@ -132,13 +132,10 @@ suite "optionals":
     test2()
 
   test "without statement evaluates optional expression only once":
-    proc test =
-      var count = 0
-      without a =? (inc count; 42.some):
-        discard
-      check count == 1
-
-    test()
+    var count = 0
+    without a =? (inc count; 42.some):
+      discard
+    check count == 1
 
   test ".?[] can be used for indexing tables without raising KeyError":
     let table = @{"a": 1, "b": 2}.toTable
