@@ -8,7 +8,7 @@ import ./without
 
 include ./errorban
 
-export resultsbase except ok, err, isOk, isErr
+export resultsbase except ok, err, isOk, isErr, get
 export chaining
 export indexing
 export without
@@ -17,6 +17,9 @@ type ResultFailure* = object of CatchableError
 
 template `?!`*(T: typed): type Result[T, ref CatchableError] =
   Result[T, ref CatchableError]
+
+template `!`*[T](value: ?!T): T =
+  value.get
 
 proc success*[T](value: T): ?!T =
   ok(?!T, value)

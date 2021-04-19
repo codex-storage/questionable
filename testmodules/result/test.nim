@@ -14,6 +14,10 @@ suite "result":
     check (?!string is Result[string, ref CatchableError])
     check (?!seq[bool] is Result[seq[bool], ref CatchableError])
 
+  test "! gets value or raises Defect":
+    check !42.success == 42
+    expect Defect: discard !int.failure error
+
   test ".? can be used for chaining results":
     let a: ?!seq[int] = @[41, 42].success
     let b: ?!seq[int] = seq[int].failure error
@@ -28,10 +32,10 @@ suite "result":
 
   test ".? chain can be followed by . calls and operators":
     let a = @[41, 42].success
-    check (a.?len.get == 2)
-    check (a.?len.get.uint8.uint64 == 2'u64)
-    check (a.?len.get() == 2)
-    check (a.?len.get().uint8.uint64 == 2'u64)
+    check (a.?len.unsafeGet == 2)
+    check (a.?len.unsafeGet.uint8.uint64 == 2'u64)
+    check (a.?len.unsafeGet() == 2)
+    check (a.?len.unsafeGet().uint8.uint64 == 2'u64)
     check (a.?deduplicate()[0].?uint8.?uint64 == 41'u64.success)
     check (a.?len + 1 == 3.success)
     check (a.?deduplicate()[0] + 1 == 42.success)

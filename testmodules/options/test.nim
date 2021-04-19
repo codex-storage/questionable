@@ -11,6 +11,10 @@ suite "optionals":
     check (?string is Option[string])
     check (?seq[bool] is Option[seq[bool]])
 
+  test "! gets value or raises Defect":
+    check !42.some == 42
+    expect Defect: discard !int.none
+
   test ".? can be used for chaining optionals":
     let a: ?seq[int] = @[41, 42].some
     let b: ?seq[int] = seq[int].none
@@ -25,10 +29,10 @@ suite "optionals":
 
   test ".? chain can be followed by . calls and operators":
     let a = @[41, 42].some
-    check a.?len.get == 2
-    check a.?len.get.uint8.uint64 == 2'u64
-    check a.?len.get() == 2
-    check a.?len.get().uint8.uint64 == 2'u64
+    check a.?len.unsafeGet == 2
+    check a.?len.unsafeGet.uint8.uint64 == 2'u64
+    check a.?len.unsafeGet() == 2
+    check a.?len.unsafeGet().uint8.uint64 == 2'u64
     check a.?deduplicate()[0].?uint8.?uint64 == 41'u64.some
     check a.?len + 1 == 3.some
     check a.?deduplicate()[0] + 1 == 42.some
@@ -147,10 +151,10 @@ suite "optionals":
     check table.?["a"].isSome
     check table.?["a"].isSome()
     check table.?["a"][0] == 41.some
-    check table.?["a"].?len.get == 2
-    check table.?["a"].?len.get.uint8.uint64 == 2'u64
-    check table.?["a"].?len.get() == 2
-    check table.?["a"].?len.get().uint8.uint64 == 2'u64
+    check table.?["a"].?len.unsafeGet == 2
+    check table.?["a"].?len.unsafeGet.uint8.uint64 == 2'u64
+    check table.?["a"].?len.unsafeGet() == 2
+    check table.?["a"].?len.unsafeGet().uint8.uint64 == 2'u64
     check table.?["a"].?deduplicate()[0].?uint8.?uint64 == 41'u64.some
     check table.?["a"].?len + 1 == 3.some
     check table.?["a"].?deduplicate()[0] + 1 == 42.some
@@ -276,6 +280,16 @@ suite "optionals":
 
     let z = x |? 3
     check z == 3
+
+    # Obtaining value with !
+
+    x = 42.some
+    let dare = !x
+    check dare == 42
+
+    x = int.none
+    expect Defect:
+      let crash {.used.} = !x
 
     # Operators
 

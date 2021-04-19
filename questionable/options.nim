@@ -7,13 +7,16 @@ import ./without
 
 include ./errorban
 
-export options
+export options except get
 export chaining
 export indexing
 export without
 
 template `?`*(T: typed): type Option[T] =
   Option[T]
+
+template `!`*[T](option: ?T): T =
+  option.get
 
 template `->?`*[T,U](option: ?T, expression: U): ?U =
   if option.isSome:

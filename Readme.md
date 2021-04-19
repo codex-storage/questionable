@@ -126,6 +126,19 @@ let z = x |? 3
 # z equals 3
 ```
 
+### Obtaining value with !
+
+The `!` operator returns the value of an Option when you're absolutely sure that
+it contains a value.
+
+```nim
+x = 42.some
+let dare = !x     # dare equals 42
+
+x = int.none
+let crash = !x    # raises a Defect
+```
+
 ### Operators
 
 The operators `[]`, `-`, `+`, `@`, `*`, `/`, `div`, `mod`, `shl`, `shr`, `&`,
