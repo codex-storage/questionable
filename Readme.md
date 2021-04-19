@@ -12,7 +12,7 @@ Use the [Nimble][3] package manager to add `questionable` to an existing
 project. Add the following to its .nimble file:
 
 ```nim
-requires "questionable >= 0.6.3 & < 0.7.0"
+requires "questionable >= 0.7.0 & < 0.8.0"
 ```
 
 If you want to make use of Result types, then you also have to add either the
