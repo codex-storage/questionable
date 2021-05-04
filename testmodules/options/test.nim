@@ -230,6 +230,11 @@ suite "optionals":
 
     check (a & b) == 42.some
 
+  test ".?[] avoids wrapping option in option":
+    let a = @[41, 42].some
+
+    check a.?[1] == 42.some
+
   test "examples from readme work":
 
     var x: ?int

@@ -62,6 +62,15 @@ template `|?`*[T](option: ?T, fallback: T): T =
   else:
     fallback
 
+macro `.?`*[T](option: ?T, brackets: untyped{nkBracket}): untyped =
+  let index = brackets[0]
+  quote do:
+    type U = typeof(`option`.unsafeGet().?[`index`].unsafeGet())
+    if `option`.isSome:
+      `option`.unsafeGet().?[`index`]
+    else:
+      U.none
+
 Option.liftUnary(`-`)
 Option.liftUnary(`+`)
 Option.liftUnary(`@`)
