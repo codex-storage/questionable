@@ -1,6 +1,12 @@
 import std/options
 import std/macros
 
+func isSym(node: NimNode): bool =
+  node.kind in {nnkSym, nnkOpenSymChoice, nnkClosedSymChoice}
+
+func expectSym(node: NimNode) =
+  node.expectKind({nnkSym, nnkOpenSymChoice, nnkClosedSymChoice})
+
 template `.?`*(option: typed, identifier: untyped{nkIdent}): untyped =
   # chain is of shape: option.?identifier
   option ->? option.unsafeGet.identifier
@@ -34,7 +40,17 @@ macro `.?`*(option: typed, call: untyped{nkCall}): untyped =
     call[0] = right
     call.insert(1, quote do: `option`.?`left`)
     call
+  elif procedure.isSym and $procedure == "[]":
+    # chain is of shape: option.?left[right] after semantic analysis
+    let left = call[1]
+    call[1] = quote do: `option`.?`left`
+    call
   else:
     # chain is of shape: option.?procedure(arguments)
     call.insert(1, quote do: `option`.unsafeGet)
     quote do: `option` ->? `call`
+
+macro `.?`*(option: typed, symbol: untyped): untyped =
+  symbol.expectSym()
+  let expression = ident($symbol)
+  quote do: `option`.?`expression`

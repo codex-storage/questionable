@@ -38,6 +38,23 @@ suite "optionals":
     check a.?deduplicate()[0] + 1 == 42.some
     check a.?deduplicate.map(x => x) == @[41, 42].some
 
+  test ".? chains work in generic code":
+    proc test[T](a: ?T) =
+      check a.?len == 2.some
+      check a.?len.?uint8 == 2'u8.some
+      check a.?len() == 2.some
+      check a.?distribute(2).?len() == 2.some
+      check a.?len.unsafeGet == 2
+      check a.?len.unsafeGet.uint8.uint64 == 2'u64
+      check a.?len.unsafeGet() == 2
+      check a.?len.unsafeGet().uint8.uint64 == 2'u64
+      check a.?deduplicate()[0].?uint8.?uint64 == 41'u64.some
+      check a.?len + 1 == 3.some
+      check a.?deduplicate()[0] + 1 == 42.some
+      check a.?deduplicate.map(x => x) == @[41, 42].some
+
+    test @[41, 42].some
+
   test "[] can be used for indexing optionals":
     let a: ?seq[int] = @[1, 2, 3].some
     let b: ?seq[int] = seq[int].none

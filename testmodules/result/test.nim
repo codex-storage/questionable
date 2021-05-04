@@ -41,6 +41,23 @@ suite "result":
     check (a.?deduplicate()[0] + 1 == 42.success)
     check (a.?deduplicate.map(x => x) == @[41, 42].success)
 
+  test ".? chains work in generic code":
+    proc test[T](a: ?!T) =
+      check (a.?len == 2.success)
+      check (a.?len.?uint8 == 2'u8.success)
+      check (a.?len() == 2.success)
+      check (a.?distribute(2).?len() == 2.success)
+      check (a.?len.unsafeGet == 2)
+      check (a.?len.unsafeGet.uint8.uint64 == 2'u64)
+      check (a.?len.unsafeGet() == 2)
+      check (a.?len.unsafeGet().uint8.uint64 == 2'u64)
+      check (a.?deduplicate()[0].?uint8.?uint64 == 41'u64.success)
+      check (a.?len + 1 == 3.success)
+      check (a.?deduplicate()[0] + 1 == 42.success)
+      check (a.?deduplicate.map(x => x) == @[41, 42].success)
+
+    test @[41, 42].success
+
   test "[] can be used for indexing results":
     let a: ?!seq[int] = @[1, 2, 3].success
     let b: ?!seq[int] = seq[int].failure error
