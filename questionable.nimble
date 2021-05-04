@@ -1,4 +1,4 @@
-version = "0.7.0"
+version = "0.8.0"
 author = "Questionable Authors"
 description = "Elegant optional types"
 license = "MIT"
