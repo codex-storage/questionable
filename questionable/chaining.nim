@@ -9,6 +9,8 @@ func expectSym(node: NimNode) =
 
 template `.?`*(option: typed, identifier: untyped{nkIdent}): untyped =
   # chain is of shape: option.?identifier
+  when not compiles(typeof(option.unsafeGet.identifier)):
+    {.error: ".? chain cannot return void".}
   option ->? option.unsafeGet.identifier
 
 macro `.?`*(option: typed, infix: untyped{nkInfix}): untyped =
