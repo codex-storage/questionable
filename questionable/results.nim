@@ -1,6 +1,7 @@
 import std/macros
 import ./resultsbase
 import ./options
+import ./binding
 import ./chaining
 import ./indexing
 import ./operators
@@ -9,6 +10,7 @@ import ./without
 include ./errorban
 
 export resultsbase except ok, err, isOk, isErr, get
+export binding
 export chaining
 export indexing
 export without
@@ -75,25 +77,6 @@ template `->?`*[T,U,V](values: (?!T, ?!U), expression: ?!V): ?!V =
 
 template `|?`*[T,E](value: Result[T,E], fallback: T): T =
   value.valueOr(fallback)
-
-macro `=?`*[T,E](name: untyped{nkIdent}, expression: Result[T,E]): bool =
-  let unsafeGet = bindSym"unsafeGet"
-  let isOk = bindSym"isOk"
-  quote do:
-    let value = `expression`
-    template `name`: T {.used.} = value.`unsafeGet`()
-    `isOk`(value)
-
-macro `=?`*[T,E](variable: untyped{nkVarTy}, expression: Result[T,E]): bool =
-  let name = variable[0]
-  let unsafeGet = bindSym"unsafeGet"
-  let isOk = bindSym"isOk"
-  quote do:
-    let value = `expression`
-    var `name` : typeof(value.`unsafeGet`())
-    if `isOk`(value):
-      `name` = value.`unsafeGet`()
-    `isOk`(value)
 
 proc option*[T,E](value: Result[T,E]): ?T =
   if value.isOk:

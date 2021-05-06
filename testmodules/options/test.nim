@@ -126,10 +126,21 @@ suite "optionals":
       let b {.used.} = a
     check count == 1
 
-  test "=? works in generic code with mixin statement":
+  test "=? works in generic code":
     proc toString[T](option: ?T): string =
       if value =? option:
-        mixin value
+        $value
+      else:
+        "none"
+
+    check 42.some.toString == "42"
+    check int.none.toString == "none"
+
+  test "=? works in generic code with variable hiding":
+    let value {.used.} = "ignored"
+
+    proc toString[T](option: ?T): string =
+      if value =? option:
         $value
       else:
         "none"
@@ -269,15 +280,6 @@ suite "optionals":
 
     someProc(int.none)
     someProc(42.some)
-
-    # generics
-
-    proc genericProc[T](option: ?T) =
-      if value =? option:
-        mixin value
-        check value == 42
-
-    genericProc(42.some)
 
     # Option chaining
 

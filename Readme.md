@@ -75,17 +75,6 @@ proc someProc(option: ?int) =
   # use value
 ```
 
-When using `=?` in generic code you may face errors about undeclared
-identifiers. This is a limitation of Nim and can be worked around with a `mixin`
-statement:
-
-```nim
-proc genericProc[T](option: ?T) =
-  if value =? option:
-    mixin value
-    # use value
-```
-
 ### Option chaining
 
 To safely access fields and call procs, you can use the `.?` operator:

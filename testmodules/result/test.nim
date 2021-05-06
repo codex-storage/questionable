@@ -129,6 +129,28 @@ suite "result":
       let b {.used.} = a
     check count == 1
 
+  test "=? works in generic code":
+    proc toString[T](res: ?!T): string =
+      if value =? res:
+        $value
+      else:
+        "error"
+
+    check 42.success.toString == "42"
+    check int.failure(error).toString == "error"
+
+  test "=? works in generic code with variable hiding":
+    let value {.used.} = "ignored"
+
+    proc toString[T](res: ?!T): string =
+      if value =? res:
+        $value
+      else:
+        "error"
+
+    check 42.success.toString == "42"
+    check int.failure(error).toString == "error"
+
   test "without statement works for results":
     proc test1 =
       without a =? 42.success:
