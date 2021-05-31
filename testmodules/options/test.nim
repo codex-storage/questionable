@@ -148,6 +148,20 @@ suite "optionals":
     check 42.some.toString == "42"
     check int.none.toString == "none"
 
+  test "=? works with closures":
+    var called = false
+    let closure = some(proc () = called = true)
+
+    if a =? none(proc ()):
+      a()
+
+    check not called
+
+    if a =? closure:
+      a()
+
+    check called
+
   test "without statement can be used for early returns":
     proc test1 =
       without a =? 42.some:

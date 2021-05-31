@@ -80,7 +80,10 @@ template `|?`*[T,E](value: Result[T,E], fallback: T): T =
 
 proc option*[T,E](value: Result[T,E]): ?T =
   if value.isOk:
-    value.unsafeGet.some
+    try: # workaround for erroneouos exception tracking when T is a closure
+      value.unsafeGet.some
+    except Exception as exception:
+      raise newException(Defect, exception.msg, exception)
   else:
     T.none
 

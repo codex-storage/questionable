@@ -151,6 +151,20 @@ suite "result":
     check 42.success.toString == "42"
     check int.failure(error).toString == "error"
 
+  test "=? works with closures":
+    var called = false
+    let closure = success(proc () = called = true)
+
+    if a =? failure(proc (), error):
+      a()
+
+    check not called
+
+    if a =? closure:
+      a()
+
+    check called
+
   test "without statement works for results":
     proc test1 =
       without a =? 42.success:

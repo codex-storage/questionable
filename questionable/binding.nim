@@ -6,7 +6,8 @@ proc option[T](option: Option[T]): Option[T] =
 
 template bindLet(name, expression): bool =
   let option = expression.option
-  template name: auto {.used.} = option.unsafeGet()
+  const default = typeof(option.unsafeGet()).default
+  let name = if option.isSome: option.unsafeGet() else: default
   option.isSome
 
 template bindVar(name, expression): bool =
