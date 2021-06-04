@@ -15,9 +15,15 @@ export indexing
 export without
 
 template `?`*(T: typed): type Option[T] =
+  ## Use `?` to make a type optional. For example the type `?int` is short for
+  ## `Option[int]`.
+
   Option[T]
 
 template `!`*[T](option: ?T): T =
+  ## Returns the value of an Option when you're absolutely sure that it
+  ## contains value. Using `!` on an Option without a value raises a Defect.
+
   option.get
 
 template `->?`*[T,U](option: ?T, expression: ?U): ?U =
@@ -39,6 +45,9 @@ template `->?`*[T,U,V](options: (?T, ?U), expression: V): ?V =
   options ->? expression.some
 
 template `|?`*[T](option: ?T, fallback: T): T =
+  ## Use the `|?` operator to supply a fallback value when an Option does not
+  ## hold a value.
+
   if option.isSome:
     option.unsafeGet()
   else:

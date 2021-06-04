@@ -18,6 +18,10 @@ template bindVar(name, expression): bool =
   option.isSome
 
 macro `=?`*(name, expression): bool =
+  ## The `=?` operator lets you bind the value inside an Option or Result to a
+  ## new variable. It can be used inside of a conditional expression, for
+  ## instance in an `if` statement.
+
   name.expectKind({nnkIdent, nnkVarTy})
   if name.kind == nnkIdent:
     quote do: bindLet(`name`, `expression`)

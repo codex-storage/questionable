@@ -63,7 +63,7 @@ else:
   # this is reached, and y is not defined
 ```
 
-The `without` statement can be used to place guards that ensure that an optional
+The `without` statement can be used to place guards that ensure that an Option
 contains a value:
 
 ```nim
