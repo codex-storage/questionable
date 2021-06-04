@@ -20,29 +20,23 @@ template `?`*(T: typed): type Option[T] =
 template `!`*[T](option: ?T): T =
   option.get
 
-template `->?`*[T,U](option: ?T, expression: U): ?U =
-  if option.isSome:
-    expression.some
-  else:
-    U.none
-
 template `->?`*[T,U](option: ?T, expression: ?U): ?U =
   if option.isSome:
     expression
   else:
     U.none
 
-template `->?`*[T,U,V](options: (?T, ?U), expression: V): ?V =
-  if options[0].isSome and options[1].isSome:
-    expression.some
-  else:
-    V.none
+template `->?`*[T,U](option: ?T, expression: U): ?U =
+  option ->? expression.some
 
 template `->?`*[T,U,V](options: (?T, ?U), expression: ?V): ?V =
   if options[0].isSome and options[1].isSome:
     expression
   else:
     V.none
+
+template `->?`*[T,U,V](options: (?T, ?U), expression: V): ?V =
+  options ->? expression.some
 
 template `|?`*[T](option: ?T, fallback: T): T =
   if option.isSome:

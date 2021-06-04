@@ -47,25 +47,14 @@ proc isSuccess*[T](value: ?!T): bool =
 proc isFailure*[T](value: ?!T): bool =
   value.isErr
 
-template `->?`*[T,U](value: ?!T, expression: U): ?!U =
-  if value.isFailure:
-    U.failure(value.error)
-  else:
-    expression.success
-
 template `->?`*[T,U](value: ?!T, expression: ?!U): ?!U =
   if value.isFailure:
     U.failure(value.error)
   else:
     expression
 
-template `->?`*[T,U,V](values: (?!T, ?!U), expression: V): ?!V =
-  if values[0].isFailure:
-    V.failure(values[0].error)
-  elif values[1].isFailure:
-    V.failure(values[1].error)
-  else:
-    expression.success
+template `->?`*[T,U](value: ?!T, expression: U): ?!U =
+  value ->? expression.success
 
 template `->?`*[T,U,V](values: (?!T, ?!U), expression: ?!V): ?!V =
   if values[0].isFailure:
@@ -74,6 +63,9 @@ template `->?`*[T,U,V](values: (?!T, ?!U), expression: ?!V): ?!V =
     V.failure(values[1].error)
   else:
     expression
+
+template `->?`*[T,U,V](values: (?!T, ?!U), expression: V): ?!V =
+  values ->? expression.success
 
 template `|?`*[T,E](value: Result[T,E], fallback: T): T =
   value.valueOr(fallback)
