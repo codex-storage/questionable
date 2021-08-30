@@ -1,5 +1,6 @@
 import std/options
 import std/macros
+import std/strformat
 
 func isSym(node: NimNode): bool =
   node.kind in {nnkSym, nnkOpenSymChoice, nnkClosedSymChoice}
@@ -7,14 +8,20 @@ func isSym(node: NimNode): bool =
 func expectSym(node: NimNode) =
   node.expectKind({nnkSym, nnkOpenSymChoice, nnkClosedSymChoice})
 
+macro expectReturnType(identifier: untyped, expression: untyped): untyped =
+  let message =
+    fmt"'{identifier}' doesn't have a return type, it can't be in a .? chain"
+  quote do:
+    when compiles(`expression`) and not compiles(typeof `expression`):
+      {.error: `message`.}
+
 template `.?`*(option: typed, identifier: untyped{nkIdent}): untyped =
   ## The `.?` chaining operator is used to safely access fields and call procs
   ## on Options or Results. The expression is only evaluated when the preceding
   ## Option or Result has a value.
 
   # chain is of shape: option.?identifier
-  when not compiles(typeof(option.unsafeGet.identifier)):
-    {.error: ".? chain cannot return void".}
+  expectReturnType(identifier, option.unsafeGet.identifier)
   option ->? option.unsafeGet.identifier
 
 macro `.?`*(option: typed, infix: untyped{nkInfix}): untyped =
@@ -70,7 +77,9 @@ macro `.?`*(option: typed, call: untyped{nkCall}): untyped =
   else:
     # chain is of shape: option.?procedure(arguments)
     call.insert(1, quote do: `option`.unsafeGet)
-    quote do: `option` ->? `call`
+    quote do:
+      expectReturnType(`procedure`, `call`)
+      `option` ->? `call`
 
 macro `.?`*(option: typed, symbol: untyped): untyped =
   ## The `.?` chaining operator is used to safely access fields and call procs
