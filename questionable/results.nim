@@ -101,7 +101,7 @@ proc option*[T,E](value: Result[T,E]): ?T =
   ## Converts a Result into an Option.
 
   if value.isOk:
-    try: # workaround for erroneouos exception tracking when T is a closure
+    try: # workaround for erroneous exception tracking when T is a closure
       value.unsafeGet.some
     except Exception as exception:
       raise newException(Defect, exception.msg, exception)
