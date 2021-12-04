@@ -4,4 +4,8 @@ description = "Questionable tests for std/option"
 license = "MIT"
 
 task test, "Runs the test suite":
-  exec "nim c -f -r test.nim"
+  var options = "-f -r"
+  when (NimMajor, NimMinor) >= (1, 4):
+    options &= " --warningAsError[UnsafeDefault]:on"
+    options &= " --warningAsError[ProveInit]:on"
+  exec "nim c " & options & " test.nim"
