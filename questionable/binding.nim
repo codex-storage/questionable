@@ -4,15 +4,19 @@ import std/macros
 proc option[T](option: Option[T]): Option[T] =
   option
 
+proc placeholder(T: type): T =
+  discard
+
 template bindLet(name, expression): bool =
   let option = expression.option
-  const default = typeof(option.unsafeGet()).default
-  let name {.used.} = if option.isSome: option.unsafeGet() else: default
+  type T = typeof(option.unsafeGet())
+  let name {.used.} = if option.isSome: option.unsafeGet() else: placeholder(T)
   option.isSome
 
 template bindVar(name, expression): bool =
   let option = expression.option
-  var name {.used.} : typeof(option.unsafeGet())
+  type T = typeof(option.unsafeGet())
+  var name {.used.} : T = placeholder(T)
   if option.isSome:
     name = option.unsafeGet()
   option.isSome

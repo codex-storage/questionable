@@ -162,6 +162,20 @@ suite "optionals":
 
     check called
 
+  test "=? works with types that do not have a default value":
+    type NoDefault {.requiresInit.} = distinct int
+    proc `==`(a,b: NoDefault): bool {.borrow.}
+
+    if a =? some NoDefault(42):
+      check a == NoDefault(42)
+    else:
+      fail()
+
+    if var a =? some NoDefault(42):
+      check a == NoDefault(42)
+    else:
+      fail()
+
   test "without statement can be used for early returns":
     proc test1 =
       without a =? 42.some:
