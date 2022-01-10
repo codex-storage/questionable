@@ -180,6 +180,69 @@ suite "result":
     test1()
     test2()
 
+  test "without statement can expose error":
+    proc test =
+      without a =? int.failure "some error", error:
+        check error.msg == "some error"
+        return
+      fail
+
+    test()
+
+  test "without statement only exposes error variable inside block":
+    proc test =
+      without a =? 42.success, errorvar:
+        fail
+        discard errorvar # fixes warning about unused variable "errorvar"
+        return
+      check not compiles errorvar
+
+    test()
+
+  test "without statements with multiple bindings exposes first error":
+    proc test1 =
+      without (a =? int.failure "error 1") and
+              (b =? int.failure "error 2"),
+              error:
+        check error.msg == "error 1"
+        return
+      fail
+
+    proc test2 =
+      without (a =? 42.success) and (b =? int.failure "error 2"), error:
+        check error.msg == "error 2"
+        return
+      fail
+
+    test1()
+    test2()
+
+  test "without statement with error evaluates result only once":
+    proc test =
+      var count = 0
+      without a =? (inc count; int.failure "error"):
+        check count == 1
+        return
+      fail
+
+    test()
+
+  test "without statement with error handles options as well":
+    proc test1 =
+      without a =? int.none and b =? int.failure "error", error:
+        check error.msg == "Option is set to `none`"
+        return
+      fail
+
+    proc test2 =
+      without a =? 42.some and b =? int.failure "error", error:
+        check error.msg == "error"
+        return
+      fail
+
+    test1()
+    test2()
+
   test "catch can be used to convert exceptions to results":
     check parseInt("42").catch == 42.success
     check parseInt("foo").catch.error of ValueError
@@ -285,6 +348,18 @@ suite "result":
 
     let converted = works().option
     check (converted == @[1, 1, 2, 2, 2].some)
+
+    # Without statement
+    proc someProc(r: ?!int) =
+      without value =? r, error:
+        check error.msg == "some error"
+        return
+
+      check value == 42
+
+    someProc(42.success)
+    someProc(int.failure "some error")
+
 
 import pkg/questionable/resultsbase
 

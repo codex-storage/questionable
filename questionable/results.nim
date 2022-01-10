@@ -6,6 +6,7 @@ import ./chaining
 import ./indexing
 import ./operators
 import ./without
+import ./withoutresult
 
 include ./errorban
 
@@ -14,6 +15,7 @@ export binding
 export chaining
 export indexing
 export without
+export withoutresult
 
 type ResultFailure* = object of CatchableError
 

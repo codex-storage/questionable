@@ -194,6 +194,20 @@ let value = fails() |? @[]
 let sum = works()[3] + 40
 ```
 
+### Without statement
+
+The `without` statement can also be used with Results. It provides access to any
+errors that may arise:
+
+```nim
+proc someProc(r: ?!int) =
+  without value =? r, error:
+    # use `error` to get the error from r
+    return
+
+  # use value
+```
+
 ### Catching errors
 
 When you want to use Results, but need to call a proc that may raise an
