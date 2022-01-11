@@ -243,6 +243,28 @@ suite "result":
     test1()
     test2()
 
+  test "without statement with error can be used more than once":
+    proc test =
+      without a =? 42.success, error:
+        discard error
+        fail
+      without b =? 42.success, error:
+        discard error
+        fail
+
+    test()
+
+  test "without statement with error works with deeply nested =? operators":
+    proc test =
+      let fail1 = int.failure "error 1"
+      let fail2 = int.failure "error 2"
+      without (block: a =? (if b =? fail1: b.success else: fail2)), error:
+        check error.msg == "error 2"
+        return
+      fail
+
+    test()
+
   test "catch can be used to convert exceptions to results":
     check parseInt("42").catch == 42.success
     check parseInt("foo").catch.error of ValueError
