@@ -14,6 +14,10 @@ suite "result":
     check (?!string is Result[string, ref CatchableError])
     check (?!seq[bool] is Result[seq[bool], ref CatchableError])
 
+  test "conversion to string $ works for ?!Types":
+    check $42.success == "success(42)"
+    check $(int.failure "some error") == "failure(\"some error\")"
+
   test "! gets value or raises Defect":
     check !42.success == 42
     expect Defect: discard !int.failure error
