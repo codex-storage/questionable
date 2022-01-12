@@ -73,6 +73,12 @@ proc isFailure*[T](value: ?!T): bool =
 
   value.isErr
 
+proc `$`*[T](value: ?!T): string =
+  if value.isSuccess:
+    "success(" & $(!value) & ")"
+  else:
+    "failure(\"" & $(value.error.msg) & "\")"
+
 template `->?`*[T,U](value: ?!T, expression: ?!U): ?!U =
   if value.isFailure:
     U.failure(value.error)
