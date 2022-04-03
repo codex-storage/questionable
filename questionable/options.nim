@@ -6,7 +6,7 @@ import ./indexing
 import ./operators
 import ./without
 
-include ./errorban
+include ./private/errorban
 
 export options except get
 export binding
