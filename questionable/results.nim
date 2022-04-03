@@ -8,7 +8,7 @@ import ./operators
 import ./without
 import ./withoutresult
 
-include ./errorban
+include ./private/errorban
 
 export resultsbase except ok, err, isOk, isErr, get
 export binding
