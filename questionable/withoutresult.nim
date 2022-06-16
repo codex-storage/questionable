@@ -25,7 +25,7 @@ template without*(condition, errorname, body) =
     var internalWithoutError {.inject.}: ref CatchableError
   else:
     internalWithoutError = nil
-  
+
   without condition:
     template errorname: ref CatchableError = internalWithoutError
     if isNil(errorname):

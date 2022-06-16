@@ -101,7 +101,7 @@ template `|?`*[T,E](value: Result[T,E], fallback: T): T =
 
 template unpack*(expression: Result): untyped =
   let res = expression
-  when declaredInScope(internalWithoutError):
+  when declared(internalWithoutError):
     if res.isFailure:
       internalWithoutError = res.error
   unpack(res.option)
