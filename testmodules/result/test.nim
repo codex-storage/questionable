@@ -265,6 +265,15 @@ suite "result":
 
     test()
 
+  test "without statement works in generic code":
+    proc test(_: type) =
+      without a =? int.failure "error", e:
+        check e.msg == "error"
+        return
+      fail
+
+    test(int)
+
   test "catch can be used to convert exceptions to results":
     check parseInt("42").catch == 42.success
     check parseInt("foo").catch.error of ValueError

@@ -99,6 +99,13 @@ template `|?`*[T,E](value: Result[T,E], fallback: T): T =
 
   value.valueOr(fallback)
 
+template unpack*(expression: Result): untyped =
+  let res = expression
+  when declaredInScope(internalWithoutError):
+    if res.isFailure:
+      internalWithoutError = res.error
+  unpack(res.option)
+
 proc option*[T,E](value: Result[T,E]): ?T =
   ## Converts a Result into an Option.
 

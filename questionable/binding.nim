@@ -7,19 +7,11 @@ proc option[T](option: Option[T]): Option[T] =
 proc placeholder(T: type): T =
   discard
 
-template bindLet(name, expression): bool =
-  let option = expression.option
+template unpack*(expression: Option): untyped =
+  let option = expression
   type T = typeof(option.unsafeGet())
-  let name {.used.} = if option.isSome: option.unsafeGet() else: placeholder(T)
-  option.isSome
-
-template bindVar(name, expression): bool =
-  let option = expression.option
-  type T = typeof(option.unsafeGet())
-  var name {.used.} : T = placeholder(T)
-  if option.isSome:
-    name = option.unsafeGet()
-  option.isSome
+  let res = if option.isSome: option.unsafeGet() else: placeholder(T)
+  (res, option.isSome)
 
 macro `=?`*(name, expression): bool =
   ## The `=?` operator lets you bind the value inside an Option or Result to a
@@ -28,7 +20,14 @@ macro `=?`*(name, expression): bool =
 
   name.expectKind({nnkIdent, nnkVarTy})
   if name.kind == nnkIdent:
-    quote do: bindLet(`name`, `expression`)
+    quote do:
+      mixin unpack
+      let (`name`, isOk) = unpack(`expression`)
+      isOk
+
   else:
     let name = name[0]
-    quote do: bindVar(`name`, `expression`)
+    quote do:
+      mixin unpack
+      var (`name`, isOk) = unpack(`expression`)
+      isOk

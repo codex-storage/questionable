@@ -21,19 +21,13 @@ template without*(condition, errorname, body) =
   ## Used to place guards that ensure that a Result contains a value.
   ## Exposes error when Result does not contain a value.
 
-  var error: ref CatchableError
-
-  # override =? operator such that it stores the error if there is one
-  template `override=?`(name, expression): bool {.gensym, used.} =
-    let optional = expression
-    when optional is Result:
-      if optional.isFailure:
-        error = optional.error
-    when optional is Option:
-      if optional.isNone:
-        error = newException(ValueError, "Option is set to `none`")
-    name =? optional
-
-  without replaceInfix(condition, `=?`, `override=?`):
-    template errorname: ref CatchableError = error
+  when not declaredInScope(internalWithoutError):
+    var internalWithoutError {.inject.}: ref CatchableError
+  else:
+    internalWithoutError = nil
+  
+  without condition:
+    template errorname: ref CatchableError = internalWithoutError
+    if isNil(errorname):
+      errorname = newException(ValueError, "Option is set to `none`")
     body
