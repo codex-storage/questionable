@@ -1,7 +1,7 @@
 import std/options
 import std/macros
 
-proc questionableUnpack[T](option: Option[T]): (T, bool) =
+proc questionableUnpack*[T](option: Option[T]): (T, bool) =
   ## Used internally
 
   if option.isSome:
