@@ -274,6 +274,13 @@ suite "result":
 
     test(int)
 
+  test "without statements can be nested":
+    without a =? int.failure "error1", e1:
+      without b =? int.failure "error2", e2:
+        check e1.msg == "error1"
+        check e2.msg == "error2"
+      check e1.msg == "error1"
+
   test "catch can be used to convert exceptions to results":
     check parseInt("42").catch == 42.success
     check parseInt("foo").catch.error of ValueError
