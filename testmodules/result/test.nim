@@ -265,6 +265,22 @@ suite "result":
 
     test()
 
+  test "without statement with error works in generic code":
+    proc test(_: type) =
+      without a =? int.failure "error", e:
+        check e.msg == "error"
+        return
+      fail
+
+    test(int)
+
+  test "without statements with error can be nested":
+    without a =? int.failure "error1", e1:
+      without b =? int.failure "error2", e2:
+        check e1.msg == "error1"
+        check e2.msg == "error2"
+      check e1.msg == "error1"
+
   test "catch can be used to convert exceptions to results":
     check parseInt("42").catch == 42.success
     check parseInt("foo").catch.error of ValueError
@@ -387,11 +403,11 @@ import pkg/questionable/resultsbase
 
 suite "result compatibility":
 
-  test "|?, =? and .option work on other types of Result":
-    type R = Result[int, string]
-    let good = R.ok 42
-    let bad = R.err "error"
+  type R = Result[int, string]
+  let good = R.ok 42
+  let bad = R.err "error"
 
+  test "|?, =? and .option work on other types of Result":
     check bad |? 43 == 43
 
     if value =? good:
@@ -400,3 +416,10 @@ suite "result compatibility":
       fail
 
     check good.option == 42.some
+
+  test "=? works on other type of Result after without statement with error":
+    without a =? 42.success, error:
+      discard error # fixes warning about unused variable "error"
+      fail
+    without b =? good:
+      fail

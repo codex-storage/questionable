@@ -1,5 +1,6 @@
 import std/options
 import std/macros
+import ./private/binderror
 
 proc option[T](option: Option[T]): Option[T] =
   option
@@ -8,17 +9,25 @@ proc placeholder(T: type): T =
   discard
 
 template bindLet(name, expression): bool =
-  let option = expression.option
+  let evaluated = expression
+  let option = evaluated.option
   type T = typeof(option.unsafeGet())
-  let name {.used.} = if option.isSome: option.unsafeGet() else: placeholder(T)
+  let name {.used.} = if option.isSome:
+    option.unsafeGet()
+  else:
+    bindFailed(evaluated)
+    placeholder(T)
   option.isSome
 
 template bindVar(name, expression): bool =
-  let option = expression.option
+  let evaluated = expression
+  let option = evaluated.option
   type T = typeof(option.unsafeGet())
-  var name {.used.} : T = placeholder(T)
-  if option.isSome:
-    name = option.unsafeGet()
+  var name {.used.} = if option.isSome:
+    option.unsafeGet()
+  else:
+    bindFailed(evaluated)
+    placeholder(T)
   option.isSome
 
 macro `=?`*(name, expression): bool =
