@@ -17,12 +17,12 @@ macro `=?`*(name, expression): bool =
   if name.kind == nnkIdent:
     quote do:
       mixin questionableUnpack
-      let (`name`, isOk) = questionableUnpack(`expression`)
+      let (`name` {.used.}, isOk) = questionableUnpack(`expression`)
       isOk
 
   else:
     let name = name[0]
     quote do:
       mixin questionableUnpack
-      var (`name`, isOk) = questionableUnpack(`expression`)
+      var (`name` {.used.}, isOk) = questionableUnpack(`expression`)
       isOk
