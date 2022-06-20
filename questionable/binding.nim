@@ -1,16 +1,12 @@
 import std/options
 import std/macros
 
-proc placeholder(T: type): T =
-  discard
-
-template questionableUnpack*[T](expression: Option[T]): (T, bool) =
+proc questionableUnpack[T](option: Option[T]): (T, bool) =
   ## Used internally
 
-  let option = expression
-  type T = typeof(option.unsafeGet())
-  let res = if option.isSome: option.unsafeGet() else: placeholder(T)
-  (res, option.isSome)
+  if option.isSome:
+    return (option.unsafeGet(), true)
+  # return default
 
 macro `=?`*(name, expression): bool =
   ## The `=?` operator lets you bind the value inside an Option or Result to a
