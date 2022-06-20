@@ -110,7 +110,7 @@ proc option*[T,E](value: Result[T,E]): ?T =
   else:
     T.none
 
-template questionableUnpack*(expression: Result): untyped =
+template questionableUnpack*[T, E](expression: Result[T, E]): (T, bool) =
   ## Used internally
 
   let res = expression

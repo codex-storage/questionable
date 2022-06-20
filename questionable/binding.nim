@@ -1,7 +1,7 @@
 import std/options
 import std/macros
 
-template questionableUnpack*(expression: Option): untyped =
+template questionableUnpack*[T](expression: Option[T]): (T, bool) =
   ## Used internally
 
   let option = expression
