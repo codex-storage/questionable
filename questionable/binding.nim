@@ -1,12 +1,15 @@
 import std/options
 import std/macros
 
+proc placeholder(T: type): T =
+  discard
+
 template questionableUnpack*[T](expression: Option[T]): (T, bool) =
   ## Used internally
 
   let option = expression
   type T = typeof(option.unsafeGet())
-  let res = if option.isSome: option.unsafeGet() else: default(T)
+  let res = if option.isSome: option.unsafeGet() else: placeholder(T)
   (res, option.isSome)
 
 macro `=?`*(name, expression): bool =
