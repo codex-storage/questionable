@@ -99,13 +99,6 @@ template `|?`*[T,E](value: Result[T,E], fallback: T): T =
 
   value.valueOr(fallback)
 
-template unpack*(expression: Result): untyped =
-  let res = expression
-  when declared(internalWithoutError):
-    if res.isFailure:
-      internalWithoutError = res.error
-  unpack(res.option)
-
 proc option*[T,E](value: Result[T,E]): ?T =
   ## Converts a Result into an Option.
 
@@ -116,6 +109,15 @@ proc option*[T,E](value: Result[T,E]): ?T =
       raise newException(Defect, exception.msg, exception)
   else:
     T.none
+
+template questionableUnpack*(expression: Result): untyped =
+  ## Used internally
+
+  let res = expression
+  when declared(internalWithoutError):
+    if res.isFailure:
+      internalWithoutError = res.error
+  questionableUnpack(res.option)
 
 Result.liftUnary(`-`)
 Result.liftUnary(`+`)

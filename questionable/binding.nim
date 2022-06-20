@@ -1,16 +1,12 @@
 import std/options
 import std/macros
 
-proc option[T](option: Option[T]): Option[T] =
-  option
+template questionableUnpack*(expression: Option): untyped =
+  ## Used internally
 
-proc placeholder(T: type): T =
-  discard
-
-template unpack*(expression: Option): untyped =
   let option = expression
   type T = typeof(option.unsafeGet())
-  let res = if option.isSome: option.unsafeGet() else: placeholder(T)
+  let res = if option.isSome: option.unsafeGet() else: default(T)
   (res, option.isSome)
 
 macro `=?`*(name, expression): bool =
@@ -21,13 +17,13 @@ macro `=?`*(name, expression): bool =
   name.expectKind({nnkIdent, nnkVarTy})
   if name.kind == nnkIdent:
     quote do:
-      mixin unpack
-      let (`name`, isOk) = unpack(`expression`)
+      mixin questionableUnpack
+      let (`name`, isOk) = questionableUnpack(`expression`)
       isOk
 
   else:
     let name = name[0]
     quote do:
-      mixin unpack
-      var (`name`, isOk) = unpack(`expression`)
+      mixin questionableUnpack
+      var (`name`, isOk) = questionableUnpack(`expression`)
       isOk
