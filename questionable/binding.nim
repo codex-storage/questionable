@@ -14,15 +14,17 @@ macro `=?`*(name, expression): bool =
   ## instance in an `if` statement.
 
   name.expectKind({nnkIdent, nnkVarTy})
+
+  # Outside of the quote do to avoid binding symbol too early
+  let unpacker = newCall("questionableUnpack", expression)
+
   if name.kind == nnkIdent:
     quote do:
-      mixin questionableUnpack
-      let (`name` {.used.}, isOk) = questionableUnpack(`expression`)
+      let (`name` {.used.}, isOk) = `unpacker`
       isOk
 
   else:
     let name = name[0]
     quote do:
-      mixin questionableUnpack
-      var (`name` {.used.}, isOk) = questionableUnpack(`expression`)
+      var (`name` {.used.}, isOk) = `unpacker`
       isOk

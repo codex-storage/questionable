@@ -110,14 +110,21 @@ proc option*[T,E](value: Result[T,E]): ?T =
   else:
     T.none
 
-template questionableUnpack*[T, E](expression: Result[T, E]): (T, bool) =
+macro questionableUnpack*[T, E](expression: Result[T, E]): (T, bool) =
   ## Used internally
 
-  let res = expression
-  when declared(internalWithoutError):
-    if res.isFailure:
-      internalWithoutError = res.error
-  questionableUnpack(res.option)
+  # expression must be resolved before quote do to avoid binding issues
+  let
+    resSymbol = genSym()
+    res = newNimNode(nnkLetSection).add(
+      newIdentDefs(resSymbol, newEmptyNode(), expression)
+    )
+  quote do:
+    `res`
+    when declared(internalWithoutError):
+      if `resSymbol`.isFailure:
+        internalWithoutError = `resSymbol`.error
+    questionableUnpack(`resSymbol`.option)
 
 Result.liftUnary(`-`)
 Result.liftUnary(`+`)
