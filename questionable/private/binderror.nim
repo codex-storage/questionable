@@ -1,6 +1,6 @@
 import std/options
 
-var captureEnabled {.global, compiletime.}: bool
+var captureEnabled {.global, compileTime.}: bool
 var errorVariable: ptr ref CatchableError
 
 template captureBindError*(error: var ref CatchableError, expression): auto =
