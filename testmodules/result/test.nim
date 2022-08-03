@@ -326,6 +326,12 @@ suite "result":
     check 42.success.option == 42.some
     check int.failure(error).option == int.none
 
+  test "Result error can be converted to Option":
+    check (int.failure(error).errorOption == error.some)
+    check (42.success.errorOption == (ref CatchableError).none)
+    check (void.failure(error).errorOption == error.some)
+    check (success().errorOption == (ref CatchableError).none)
+
   test "failure can be used without type parameter in procs":
     proc fails: ?!int =
       failure "some error"
