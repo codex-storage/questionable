@@ -281,6 +281,19 @@ suite "result":
         check e2.msg == "error2"
       check e1.msg == "error1"
 
+  test "without statements with error work in nested calls":
+    proc bar(): ?!int =
+      without _ =? int.failure "error", err:
+        return failure err.msg
+
+    proc foo() =
+      without _ =? bar(), err:
+        check err.msg == "error"
+        return
+      fail()
+
+    foo()
+
   test "catch can be used to convert exceptions to results":
     check parseInt("42").catch == 42.success
     check parseInt("foo").catch.error of ValueError
