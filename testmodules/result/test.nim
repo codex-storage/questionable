@@ -281,6 +281,15 @@ suite "result":
         check e2.msg == "error2"
       check e1.msg == "error1"
 
+  test "without statement works in generic code using existing error name":
+    let existingName {.used.} = "some variable"
+
+    proc shouldCompile(_: type int): ?!int =
+      without _ =? int.failure "error", existingName:
+        return success 42
+
+    discard int.shouldCompile()
+
   test "without statements with error work in nested calls":
     proc bar(): ?!int =
       without _ =? int.failure "error", err:
