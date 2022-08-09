@@ -1,15 +1,15 @@
 import std/options
 
-var captureEnabled {.global, compileTime.}: bool
+var captures {.global, compileTime.}: int
 var errorVariable: ptr ref CatchableError
 
 template captureBindError*(error: var ref CatchableError, expression): auto =
   let previousErrorVariable = errorVariable
   errorVariable = addr error
 
-  static: captureEnabled = true
+  static: inc captures
   let evaluated = expression
-  static: captureEnabled = false
+  static: dec captures
 
   errorVariable = previousErrorVariable
 
@@ -19,6 +19,6 @@ func error[T](option: Option[T]): ref CatchableError =
   newException(ValueError, "Option is set to `none`")
 
 template bindFailed*(expression) =
-  when captureEnabled:
+  when captures > 0:
     mixin error
     errorVariable[] = expression.error

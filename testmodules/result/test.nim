@@ -294,6 +294,22 @@ suite "result":
 
     foo()
 
+  test "without statement with error works in nested generic calls":
+    proc works(_: type int): ?!int =
+      without _ =? int.failure "error1", err:
+        return success 42
+
+    proc fails(_: type int): ?!int =
+      return failure "error2"
+
+    proc foo =
+      without a =? int.works() and b =? int.fails(), error:
+        check error.msg == "error2"
+        return
+      fail()
+
+    foo()
+
   test "catch can be used to convert exceptions to results":
     check parseInt("42").catch == 42.success
     check parseInt("foo").catch.error of ValueError
