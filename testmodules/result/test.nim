@@ -286,6 +286,7 @@ suite "result":
 
     proc shouldCompile(_: type int): ?!int =
       without _ =? int.failure "error", existingName:
+        check existingName.msg == "error"
         return success 42
 
     discard int.shouldCompile()
