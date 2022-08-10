@@ -306,7 +306,8 @@ suite "result":
 
   test "without statement with error works in nested generic calls":
     proc works(_: type int): ?!int =
-      without _ =? int.failure "error1", err:
+      without _ =? int.failure "error1", error:
+        check error.msg == "error1"
         return success 42
 
     proc fails(_: type int): ?!int =
