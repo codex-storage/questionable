@@ -15,50 +15,30 @@ macro expectReturnType(identifier: untyped, expression: untyped): untyped =
     when compiles(`expression`) and not compiles(typeof `expression`):
       {.error: `message`.}
 
-template `.?`*(option: typed, identifier: untyped{nkIdent}): untyped =
-  ## The `.?` chaining operator is used to safely access fields and call procs
-  ## on Options or Results. The expression is only evaluated when the preceding
-  ## Option or Result has a value.
-
+template chain(option: typed, identifier: untyped{nkIdent}): untyped =
   # chain is of shape: option.?identifier
   expectReturnType(identifier, option.unsafeGet.identifier)
   option ->? option.unsafeGet.identifier
 
-macro `.?`*(option: typed, infix: untyped{nkInfix}): untyped =
-  ## The `.?` chaining operator is used to safely access fields and call procs
-  ## on Options or Results. The expression is only evaluated when the preceding
-  ## Option or Result has a value.
-
+macro chain(option: typed, infix: untyped{nkInfix}): untyped =
   # chain is of shape: option.?left `operator` right
   let left = infix[1]
   infix[1] = quote do: `option`.?`left`
   infix
 
-macro `.?`*(option: typed, bracket: untyped{nkBracketExpr}): untyped =
-  ## The `.?` chaining operator is used to safely access fields and call procs
-  ## on Options or Results. The expression is only evaluated when the preceding
-  ## Option or Result has a value.
-
+macro chain(option: typed, bracket: untyped{nkBracketExpr}): untyped =
   # chain is of shape: option.?left[right]
   let left = bracket[0]
   bracket[0] = quote do: `option`.?`left`
   bracket
 
-macro `.?`*(option: typed, dot: untyped{nkDotExpr}): untyped =
-  ## The `.?` chaining operator is used to safely access fields and call procs
-  ## on Options or Results. The expression is only evaluated when the preceding
-  ## Option or Result has a value.
-
+macro chain(option: typed, dot: untyped{nkDotExpr}): untyped =
   # chain is of shape: option.?left.right
   let left = dot[0]
   dot[0] = quote do: `option`.?`left`
   dot
 
-macro `.?`*(option: typed, call: untyped{nkCall}): untyped =
-  ## The `.?` chaining operator is used to safely access fields and call procs
-  ## on Options or Results. The expression is only evaluated when the preceding
-  ## Option or Result has a value.
-
+macro chain(option: typed, call: untyped{nkCall}): untyped =
   let procedure = call[0]
   if call.len == 1:
     # chain is of shape: option.?procedure()
@@ -81,11 +61,15 @@ macro `.?`*(option: typed, call: untyped{nkCall}): untyped =
       expectReturnType(`procedure`, `call`)
       `option` ->? `call`
 
-macro `.?`*(option: typed, symbol: untyped): untyped =
-  ## The `.?` chaining operator is used to safely access fields and call procs
-  ## on Options or Results. The expression is only evaluated when the preceding
-  ## Option or Result has a value.
-
+macro chain(option: typed, symbol: untyped): untyped =
   symbol.expectSym()
   let expression = ident($symbol)
   quote do: `option`.?`expression`
+
+template `.?`*(left: typed, right: untyped): untyped =
+  ## The `.?` chaining operator is used to safely access fields and call procs
+  ## on Options or Results. The expression is only evaluated when the preceding
+  ## Option or Result has a value.
+  block:
+    let evaluated = left
+    chain(evaluated, right)

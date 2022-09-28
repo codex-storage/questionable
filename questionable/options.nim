@@ -44,7 +44,7 @@ template `->?`*[T,U,V](options: (?T, ?U), expression: ?V): ?V =
 template `->?`*[T,U,V](options: (?T, ?U), expression: V): ?V =
   options ->? expression.some
 
-template `|?`*[T](option: ?T, fallback: T): T =
+proc `|?`*[T](option: ?T, fallback: T): T =
   ## Use the `|?` operator to supply a fallback value when an Option does not
   ## hold a value.
 
@@ -56,11 +56,13 @@ template `|?`*[T](option: ?T, fallback: T): T =
 macro `.?`*[T](option: ?T, brackets: untyped{nkBracket}): untyped =
   let index = brackets[0]
   quote do:
-    type U = typeof(`option`.unsafeGet().?[`index`].unsafeGet())
-    if `option`.isSome:
-      `option`.unsafeGet().?[`index`]
-    else:
-      U.none
+    block:
+      let evaluated = `option`
+      type U = typeof(evaluated.unsafeGet().?[`index`].unsafeGet())
+      if evaluated.isSome:
+        evaluated.unsafeGet().?[`index`]
+      else:
+        U.none
 
 Option.liftUnary(`-`)
 Option.liftUnary(`+`)

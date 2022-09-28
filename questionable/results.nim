@@ -93,7 +93,7 @@ template `->?`*[T,U,V](values: (?!T, ?!U), expression: ?!V): ?!V =
 template `->?`*[T,U,V](values: (?!T, ?!U), expression: V): ?!V =
   values ->? expression.success
 
-template `|?`*[T,E](value: Result[T,E], fallback: T): T =
+proc `|?`*[T,E](value: Result[T,E], fallback: T): T =
   ## Use the `|?` operator to supply a fallback value when a Result does not
   ## hold a value.
 
