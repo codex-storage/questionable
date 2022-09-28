@@ -115,17 +115,6 @@ suite "optionals":
     else:
       fail
 
-  test "=? evaluates optional expression only once":
-    var count = 0
-    if a =? (inc count; 42.some):
-      let b {.used.} = a
-    check count == 1
-
-    count = 0
-    if var a =? (inc count; 42.some):
-      let b {.used.} = a
-    check count == 1
-
   test "=? works in generic code":
     proc toString[T](option: ?T): string =
       if value =? option:
@@ -273,6 +262,58 @@ suite "optionals":
     let a = @[41, 42].some
 
     check a.?[1] == 42.some
+
+  test ".? chain evaluates optional expression only once":
+    var count = 0
+    discard (inc count; @[41, 42].some).?len
+    check count == 1
+
+  test "=? evaluates optional expression only once":
+    var count = 0
+    if a =? (inc count; 42.some):
+      let b {.used.} = a
+    check count == 1
+
+    count = 0
+    if var a =? (inc count; 42.some):
+      let b {.used.} = a
+    check count == 1
+
+  test "|? evaluates optional expression only once":
+    var count = 0
+    discard (inc count; 42.some) |? 43
+    check count == 1
+
+  test ".?[] evaluates optional expression only once":
+    # indexing on optional sequence:
+    block:
+      var count = 0
+      discard (inc count; @[41, 42].some).?[0]
+      check count == 1
+    # indexing on normal sequence:
+    block:
+      var count = 0
+      discard (inc count; @[41, 42]).?[0]
+      check count == 1
+
+  test "lifted unary operators evaluate optional expression only once":
+    var count = 0
+    discard -(inc count; 42.some)
+    check count == 1
+
+  test "lifted binary operators evaluate optional expressions only once":
+    # lifted operator on two options:
+    block:
+      var count1, count2 = 0
+      discard (inc count1; 40.some) + (inc count2; 2.some)
+      check count1 == 1
+      check count2 == 1
+    # lifted operator on option and value:
+    block:
+      var count1, count2 = 0
+      discard (inc count1; 40.some) + (inc count2; 2)
+      check count1 == 1
+      check count2 == 1
 
   test "examples from readme work":
 

@@ -1,12 +1,19 @@
 template liftUnary*(T: type, operator: untyped) =
 
   template `operator`*(a: T): untyped =
-    a ->? `operator`(a.unsafeGet())
+    block:
+      let evaluated = a
+      evaluated ->? `operator`(evaluated.unsafeGet())
 
 template liftBinary*(T: type, operator: untyped) =
 
   template `operator`*(a: T, b: T): untyped =
-    (a, b) ->? `operator`(a.unsafeGet, b.unsafeGet)
+    block:
+      let evalA = a
+      let evalB = b
+      (evalA, evalB) ->? `operator`(evalA.unsafeGet, evalB.unsafeGet)
 
   template `operator`*(a: T, b: typed): untyped =
-    a ->? `operator`(a.unsafeGet(), b)
+    block:
+      let evalA = a
+      evalA ->? `operator`(evalA.unsafeGet(), b)

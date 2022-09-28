@@ -396,6 +396,61 @@ suite "result":
 
     check (a & b) == 42.success
 
+  test ".? chain evaluates result only once":
+    var count = 0
+    discard (inc count; @[41, 42].success).?len
+    check count == 1
+
+  test "=? evaluates result only once":
+    var count = 0
+    if a =? (inc count; 42.success):
+      let b {.used.} = a
+    check count == 1
+
+    count = 0
+    if var a =? (inc count; 42.success):
+      let b {.used.} = a
+    check count == 1
+
+  test "|? evaluates result only once":
+    var count = 0
+    discard (inc count; 42.success) |? 43
+    check count == 1
+
+  test ".?[] evaluates result only once":
+    var count = 0
+    discard (inc count; @[41, 42].success).?[0]
+    check count == 1
+
+  test "lifted unary operators evaluate result only once":
+    var count = 0
+    discard -(inc count; 42.success)
+    check count == 1
+
+  test "lifted binary operators evaluate results only once":
+    # lifted operator on two options:
+    block:
+      var count1, count2 = 0
+      discard (inc count1; 40.success) + (inc count2; 2.success)
+      check count1 == 1
+      check count2 == 1
+    # lifted operator on option and value:
+    block:
+      var count1, count2 = 0
+      discard (inc count1; 40.success) + (inc count2; 2)
+      check count1 == 1
+      check count2 == 1
+
+  test "conversion to option evaluates result only once":
+    var count = 0
+    discard (inc count; 42.success).option
+    check count == 1
+
+  test "conversion to error evaluates result only once":
+    var count = 0
+    discard (inc count; int.failure(error)).errorOption
+    check count == 1
+
   test "examples from readme work":
 
     proc works: ?!seq[int] =
