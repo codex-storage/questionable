@@ -7,6 +7,7 @@ import ./operators
 import ./without
 
 include ./private/errorban
+import ./private/scope
 
 export options except get
 export binding
@@ -56,7 +57,7 @@ proc `|?`*[T](option: ?T, fallback: T): T =
 macro `.?`*[T](option: ?T, brackets: untyped{nkBracket}): untyped =
   let index = brackets[0]
   quote do:
-    block:
+    scope:
       let evaluated = `option`
       type U = typeof(evaluated.unsafeGet().?[`index`].unsafeGet())
       if evaluated.isSome:

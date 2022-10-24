@@ -1,6 +1,7 @@
 import std/options
 import std/macros
 import std/strformat
+import ./private/scope
 
 func isSym(node: NimNode): bool =
   node.kind in {nnkSym, nnkOpenSymChoice, nnkClosedSymChoice}
@@ -70,6 +71,6 @@ template `.?`*(left: typed, right: untyped): untyped =
   ## The `.?` chaining operator is used to safely access fields and call procs
   ## on Options or Results. The expression is only evaluated when the preceding
   ## Option or Result has a value.
-  block:
+  scope:
     let evaluated = left
     chain(evaluated, right)
