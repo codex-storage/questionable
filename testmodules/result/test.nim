@@ -172,6 +172,11 @@ suite "result":
     else:
       fail()
 
+    if (a, b) =? (string, int).failure(error):
+      discard a
+      discard b
+      fail()
+
   test "=? binds and unpacks tuples with named fields":
     if (a, b) =? (success (desc: "test", id: 1)):
       check a == "test"

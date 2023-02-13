@@ -172,6 +172,11 @@ suite "optionals":
     else:
       fail()
 
+    if (a, b) =? none (string, int):
+      discard a
+      discard b
+      fail()
+
   test "=? binds and unpacks tuples with named fields":
     if (a, b) =? (some (desc: "test", id: 1)):
       check a == "test"
