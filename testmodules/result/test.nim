@@ -165,6 +165,77 @@ suite "result":
 
     check called
 
+  test "=? binds and unpacks tuples":
+    if (a, b) =? (success ("test", 1)):
+      check a == "test"
+      check b == 1
+    else:
+      fail()
+
+  test "=? binds and unpacks tuples with named fields":
+    if (a, b) =? (success (desc: "test", id: 1)):
+      check a == "test"
+      check b == 1
+    else:
+      fail()
+
+  test "=? binds and unpacks tuples returned from proc":
+    proc returnsTuple(): ?!tuple[name: string, id: int] = success ("test", 1)
+
+    if (a, b) =? returnsTuple():
+      check a == "test"
+      check b == 1
+    else:
+      fail()
+
+  test "=? binds and unpacks tuples returned from proc with unnamed fields":
+    proc returnsTuple(): ?!(string, int,) = success ("test", 1,)
+
+    if (a, b,) =? returnsTuple():
+      check a == "test"
+      check b == 1
+    else:
+      fail()
+
+  test "=? binds and unpacks tuples with _":
+    if (_, b) =? success ("test", 1):
+      check b == 1
+    else:
+      fail()
+
+  test "=? binds and unpacks tuples with named fields":
+    if (a, b) =? success (desc: "test", id: 1):
+      check a == "test"
+      check b == 1
+    else:
+      fail()
+
+  test "=? binds variable to tuples with named fields":
+    if t =? success (desc: "test", id: 1):
+      check t.desc == "test"
+      check t.id == 1
+    else:
+      fail()
+
+  test "=? binds to tuple types":
+    type MyTuple = tuple
+      desc: string
+      id: int
+
+    let mt: MyTuple = ("test", 1)
+
+    if t =? (success mt):
+      check t.desc == "test"
+      check t.id == 1
+    else:
+      fail()
+
+    if (a, b) =? (success mt):
+      check a == "test"
+      check b == 1
+    else:
+      fail()
+
   test "without statement works for results":
     proc test1 =
       without a =? 42.success:
