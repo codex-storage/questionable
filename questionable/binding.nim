@@ -48,13 +48,17 @@ macro bindTuple(name, expression): bool =
       bindFailed(evaluated)
       placeholder(`T`)
 
+  # build tuple unpacking statement, eg:
+  # let (a, b) = `valueNode`
+  let tplNode = nnkVarTuple.newTree()
+  for i in 0..<name.len:
+    tplNode.add name[i]
+  tplNode.add newEmptyNode()
+  tplNode.add valueNode
+
   stmtList.add nnkStmtList.newTree(
     nnkLetSection.newTree(
-      nnkVarTuple.newTree(
-        name.children.toSeq.concat(
-          @[newEmptyNode(), valueNode]
-        )
-      )
+      tplNode
     )
   )
   stmtList.add quote do: `opt`.isSome
@@ -65,10 +69,14 @@ macro `=?`*(name, expression): bool =
   ## new variable. It can be used inside of a conditional expression, for
   ## instance in an `if` statement.
 
-  name.expectKind({nnkIdent, nnkVarTy, nnkTupleConstr})
+  when (NimMajor, NimMinor) < (1, 6):
+    name.expectKind({nnkIdent, nnkVarTy, nnkTupleConstr, nnkPar})
+  else:
+    name.expectKind({nnkIdent, nnkVarTy, nnkTupleConstr})
+
   if name.kind == nnkIdent:
     quote do: bindLet(`name`, `expression`)
-  elif name.kind == nnkTupleConstr:
+  elif name.kind == nnkTupleConstr or name.kind == nnkPar:
     quote do: bindTuple(`name`, `expression`)
   else:
     let name = name[0]
