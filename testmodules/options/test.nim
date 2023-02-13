@@ -198,20 +198,20 @@ suite "optionals":
       fail()
 
   test "=? binds and unpacks tuples with _":
-    if (_, b) =? ("test", 1):
+    if (_, b) =? some ("test", 1):
       check b == 1
     else:
       fail()
 
   test "=? binds and unpacks tuples with named fields":
-    if (a, b) =? (desc: "test", id: 1):
+    if (a, b) =? some (desc: "test", id: 1):
       check a == "test"
       check b == 1
     else:
       fail()
 
   test "=? binds variable to tuples with named fields":
-    if t =? (desc: "test", id: 1):
+    if t =? some (desc: "test", id: 1):
       check t.desc == "test"
       check t.id == 1
     else:
