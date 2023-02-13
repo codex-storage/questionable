@@ -30,38 +30,35 @@ template bindVar(name, expression): bool =
     placeholder(T)
   option.isSome
 
-macro bindTuple(name, expression): bool =
-  let stmtList = newStmtList()
-  let opt = genSym(nskLet, "option")
-  let T = genSym(nskType, "T")
+proc newUnpackTupleNode(names: NimNode, value: NimNode): NimNode =
+  # builds tuple unpacking statement, eg: let (a, b) = value
+  let vartuple = nnkVarTuple.newTree()
+  for i in 0..<names.len:
+    vartuple.add names[i]
+  vartuple.add newEmptyNode()
+  vartuple.add value
+  nnkLetSection.newTree(vartuple)
 
-  stmtList.add quote do:
-    let evaluated = `expression`
-    let `opt` = evaluated.option
-    type `T` = typeof(`opt`.unsafeGet())
+macro bindTuple(names, expression): bool =
+  let opt = ident("option")
+  let evaluated = ident("evaluated")
+  let T = ident("T")
 
-  let valueNode = quote do:
+  let value = quote do:
     if `opt`.isSome:
       `opt`.unsafeGet()
     else:
-      bindFailed(evaluated)
+      bindFailed(`evaluated`)
       placeholder(`T`)
 
-  # build tuple unpacking statement, eg:
-  # let (a, b) = `valueNode`
-  let tplNode = nnkVarTuple.newTree()
-  for i in 0..<name.len:
-    tplNode.add name[i]
-  tplNode.add newEmptyNode()
-  tplNode.add valueNode
+  let letsection = newUnpackTupleNode(names, value)
 
-  stmtList.add nnkStmtList.newTree(
-    nnkLetSection.newTree(
-      tplNode
-    )
-  )
-  stmtList.add quote do: `opt`.isSome
-  return stmtList
+  quote do:
+    let `evaluated` = `expression`
+    let `opt` = `evaluated`.option
+    type `T` = typeof(`opt`.unsafeGet())
+    `letsection`
+    `opt`.isSome
 
 macro `=?`*(name, expression): bool =
   ## The `=?` operator lets you bind the value inside an Option or Result to a
