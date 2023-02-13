@@ -180,7 +180,7 @@ suite "optionals":
       fail()
 
   test "=? binds and unpacks tuples returned from proc":
-    proc returnsTuple(): Option[tuple[name: string, id: int]] = some ("test", 1)
+    proc returnsTuple(): ?tuple[name: string, id: int] = some ("test", 1)
 
     if (a, b) =? returnsTuple():
       check a == "test"
@@ -189,7 +189,7 @@ suite "optionals":
       fail()
 
   test "=? binds and unpacks tuples returned from proc with unnamed fields":
-    proc returnsTuple(): Option[(string, int,)] = some ("test", 1,)
+    proc returnsTuple(): ?(string, int,) = some ("test", 1,)
 
     if (a, b,) =? returnsTuple():
       check a == "test"
