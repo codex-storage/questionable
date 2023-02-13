@@ -1,6 +1,5 @@
 import std/options
 import std/macros
-import std/sequtils
 import ./private/binderror
 
 proc option[T](option: Option[T]): Option[T] =
