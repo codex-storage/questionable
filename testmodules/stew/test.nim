@@ -1,1 +1,1 @@
-include ../result/test
+include ../results/test
