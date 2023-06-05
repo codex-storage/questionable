@@ -19,7 +19,7 @@ If you want to make use of Result types, then you also have to add either the
 [result][2] package, or the [stew][4] package:
 
 ```nim
-requires "result" # either this
+requires "results" # either this
 requires "stew"   # or this
 ```
 
