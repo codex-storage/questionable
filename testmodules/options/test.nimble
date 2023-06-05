@@ -4,7 +4,7 @@ description = "Questionable tests for std/option"
 license = "MIT"
 
 task test, "Runs the test suite":
-  var options = "-f -r"
+  var options = "-f -r --skipParentCfg"
   when (NimMajor, NimMinor) >= (1, 4):
     options &= " --warningAsError[UnsafeDefault]:on"
     options &= " --warningAsError[ProveInit]:on"
