@@ -22,23 +22,27 @@ template chain(option: typed, identifier: untyped{nkIdent}): untyped =
 
 macro chain(option: typed, infix: untyped{nkInfix}): untyped =
   # chain is of shape: option.?left `operator` right
+  let infix = infix.copyNimTree()
   let left = infix[1]
   infix[1] = quote do: `option`.?`left`
   infix
 
 macro chain(option: typed, bracket: untyped{nkBracketExpr}): untyped =
   # chain is of shape: option.?left[right]
+  let bracket = bracket.copyNimTree()
   let left = bracket[0]
   bracket[0] = quote do: `option`.?`left`
   bracket
 
 macro chain(option: typed, dot: untyped{nkDotExpr}): untyped =
   # chain is of shape: option.?left.right
+  let dot = dot.copyNimTree()
   let left = dot[0]
   dot[0] = quote do: `option`.?`left`
   dot
 
 macro chain(option: typed, call: untyped{nkCall}): untyped =
+  let call = call.copyNimTree()
   let procedure = call[0]
   if call.len == 1:
     # chain is of shape: option.?procedure()

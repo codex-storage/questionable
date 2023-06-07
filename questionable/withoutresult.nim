@@ -12,6 +12,7 @@ proc undoSymbolResolution(expression, ident: NimNode): NimNode =
   if expression.kind in symbolKinds and eqIdent($expression, $ident):
     return ident
 
+  let expression = expression.copyNimTree()
   for i in 0..<expression.len:
     expression[i] = undoSymbolResolution(expression[i], ident)
 
