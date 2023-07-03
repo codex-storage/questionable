@@ -1,0 +1,2 @@
+--path:"../.."
+import "../../config.nims"
