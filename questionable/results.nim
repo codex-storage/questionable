@@ -20,11 +20,21 @@ export withoutresult
 type ResultFailure* = object of CatchableError
 
 template `?!`*(T: typed): type Result[T, ref CatchableError] =
-  ## Use `?!` make a Result type. These Result types either hold a value or
-  ## an error. For example the type `?!int` is short for
-  ## `Result[int, ref CatchableError]`.
+  ## Use `?!` to declare a Result type for `T` with an error of `ref CatchableError`.
+  ## 
+  ## Result types either hold a value or an error. For example
+  ## the type `?!int` is short for `Result[int, ref CatchableError]`.
+  ## 
 
   Result[T, ref CatchableError]
+
+template `?!`*[T; E: CatchableError](t: typedesc[T], e: typedesc[E]): type Result[T, ref E] =
+  ## Use inline `?!` to declare a Result type for `T` with a given error type.
+  ## 
+  ## Result types either hold a value or an error. For example
+  ## the type `string ?! KeyError` is short for `Result[string, ref KeyError]`.
+  ## 
+  Result[T, ref E]
 
 template `!`*[T](value: ?!T): T =
   ## Returns the value of a Result when you're absolutely sure that it
