@@ -22,7 +22,7 @@ macro without*(condition, errorname, body: untyped): untyped =
   ## Used to place guards that ensure that a Result contains a value.
   ## Exposes error when Result does not contain a value.
   
-  let errorIdent = ident errorname.strVal
+  let errorIdent = ident errorname.repr
 
   # Nim's early symbol resolution might have picked up a symbol with the
   # same name as our error variable. We need to undo this to make sure that our
