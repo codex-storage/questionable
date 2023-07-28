@@ -21,7 +21,8 @@ proc undoSymbolResolution(expression, ident: NimNode): NimNode =
 macro without*(condition, errorname, body: untyped): untyped =
   ## Used to place guards that ensure that a Result contains a value.
   ## Exposes error when Result does not contain a value.
-
+  
+  errorname.expectKind(nnkIdent)
   let errorIdent = ident $errorname
 
   # Nim's early symbol resolution might have picked up a symbol with the
