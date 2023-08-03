@@ -267,6 +267,16 @@ suite "optionals":
     check table.?["a"] == 1.some
     check table.?["c"] == int.none
 
+  test ".?[] can be used for indexing strings without raising IndexDefect":
+    let str = "a"
+    check str.?[0] == 'a'.some 
+    check str.?[1] == char.none
+
+  test ".?[] can be used for indexing sequences without raising IndexDefect":
+    let sequence = @[1]
+    check sequence.?[0] == 1.some
+    check sequence.?[1] == int.none
+
   test ".?[] can be followed by calls, operators and indexing":
     let table = @{"a": @[41, 42]}.toTable
     check table.?["a"].isSome
