@@ -3,7 +3,10 @@ import std/options
 import std/sequtils
 import std/strutils
 import std/sugar
+import std/threadpool
 import pkg/questionable/results
+
+{.experimental: "parallel".}
 
 suite "result":
 
@@ -400,6 +403,14 @@ suite "result":
       fail()
 
     foo()
+
+  test "without statement with error works with multiple threads":
+    proc fail(number: int) =
+      without _ =? int.failure "error" & $number, error:
+        check error.msg == "error" & $number
+    parallel:
+      for i in 0..<1000:
+        spawn fail(i)
 
   test "catch can be used to convert exceptions to results":
     check parseInt("42").catch == 42.success

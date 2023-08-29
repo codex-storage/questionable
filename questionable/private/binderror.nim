@@ -1,7 +1,7 @@
 import std/options
 
 var captures {.global, compileTime.}: int
-var errorVariable: ptr ref CatchableError
+var errorVariable {.threadvar.}: ptr ref CatchableError
 
 template captureBindError*(error: var ref CatchableError, expression): auto =
   let previousErrorVariable = errorVariable
