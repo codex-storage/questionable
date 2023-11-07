@@ -8,7 +8,7 @@ proc option[T](option: Option[T]): Option[T] =
 proc placeholder(T: type): T =
   discard
 
-template bindLet(name, expression): bool =
+template bindLet(name, expression): untyped =
   let evaluated = expression
   let option = evaluated.option
   type T = typeof(option.unsafeGet())
@@ -19,7 +19,7 @@ template bindLet(name, expression): bool =
     placeholder(T)
   option.isSome
 
-template bindVar(name, expression): bool =
+template bindVar(name, expression): untyped =
   let evaluated = expression
   let option = evaluated.option
   type T = typeof(option.unsafeGet())

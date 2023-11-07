@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        nim: [stable, 1.6.14, 1.4.8, 1.2.18]
+        nim: [stable, 1.6.16, 1.4.8, 1.2.18]
     steps:
     - uses: actions/checkout@v2
     - uses: iffy/install-nim@v3
