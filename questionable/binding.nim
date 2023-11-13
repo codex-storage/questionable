@@ -2,15 +2,20 @@ import std/options
 import std/macros
 import ./private/binderror
 
-proc option[T](option: Option[T]): Option[T] =
+template toOption[T](option: Option[T]): Option[T] =
   option
+
+template toOption[T: ref | ptr | pointer | proc](value: T): Option[T] =
+  # `std/options` don't consider closure iterators to be pointer types
+  # (probably a bug) so we don't list them here.
+  value.option
 
 proc placeholder(T: type): T =
   discard
 
 template bindLet(name, expression): untyped =
   let evaluated = expression
-  let option = evaluated.option
+  let option = evaluated.toOption
   type T = typeof(option.unsafeGet())
   let name {.used.} = if option.isSome:
     option.unsafeGet()
@@ -21,7 +26,7 @@ template bindLet(name, expression): untyped =
 
 template bindVar(name, expression): untyped =
   let evaluated = expression
-  let option = evaluated.option
+  let option = evaluated.toOption
   type T = typeof(option.unsafeGet())
   var name {.used.} = if option.isSome:
     option.unsafeGet()
@@ -55,7 +60,7 @@ macro bindTuple(names, expression): bool =
 
   quote do:
     let `evaluated` = `expression`
-    let `opt` = `evaluated`.option
+    let `opt` = `evaluated`.toOption
     type `T` = typeof(`opt`.unsafeGet())
     `letsection`
     `opt`.isSome
