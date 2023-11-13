@@ -288,6 +288,15 @@ suite "optionals":
     else:
       fail()
 
+  test "=? for tuples does not leak symbols into caller's scope":
+    const evaluated = ""
+    type T = string
+    if (a,) =? some (0,):
+      check a == 0
+      check option is proc
+      check evaluated is string
+      check T is string
+
   test "without statement can be used for early returns":
     proc test1 =
       without a =? 42.some:

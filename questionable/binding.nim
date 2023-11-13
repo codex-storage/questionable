@@ -45,9 +45,9 @@ proc newUnpackTupleNode(names: NimNode, value: NimNode): NimNode =
   nnkLetSection.newTree(vartuple)
 
 macro bindTuple(names, expression): bool =
-  let opt = ident("option")
-  let evaluated = ident("evaluated")
-  let T = ident("T")
+  let opt = genSym(nskLet, "option")
+  let evaluated = genSym(nskLet, "evaluated")
+  let T = genSym(nskType, "T")
 
   let value = quote do:
     if `opt`.isSome:
