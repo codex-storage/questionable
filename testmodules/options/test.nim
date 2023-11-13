@@ -165,6 +165,53 @@ suite "optionals":
     else:
       fail()
 
+  test "=? works with reference types":
+    var x = new int
+    x[] = 42
+    if a =? x:
+      check a[] == 42
+    else:
+      fail
+
+    x = nil
+    if a =? x:
+      fail
+
+    var p = proc = discard
+    if a =? p:
+      a()
+    else:
+      fail
+
+    p = nil
+    if a =? p:
+      fail
+
+  test "=? rejects non-reference types":
+    check `not` compiles do:
+      if a =? 0:
+        discard
+    check `not` compiles do:
+      if var a =? 0:
+        discard
+    check `not` compiles do:
+      if (a,) =? (0,):
+        discard
+
+  test "=? works with custom optional types":
+    type MyOption = distinct int
+    proc isSome(x: MyOption): bool = x.int >= 0
+    proc unsafeGet(x: MyOption): int = x.int
+    template toOption(x: MyOption): MyOption = x
+
+    if a =? MyOption 42:
+      check a == 42
+    else:
+      fail
+
+    if a =? MyOption -1:
+      fail
+
   test "=? binds and unpacks tuples":
     if (a, b) =? (some ("test", 1)):
       check a == "test"
