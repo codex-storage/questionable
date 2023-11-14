@@ -116,6 +116,11 @@ proc option*[T,E](value: Result[T,E]): ?T =
   else:
     T.none
 
+template toOption*[T, E](value: Result[T, E]): ?T =
+  ## Converts a Result into an Option.
+
+  value.option
+
 proc errorOption*[T, E](value: Result[T, E]): ?E =
   ## Returns an Option that contains the error from the Result, if it has one.
 
