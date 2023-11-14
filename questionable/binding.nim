@@ -2,12 +2,17 @@ import std/options
 import std/macros
 import ./private/binderror
 
+when (NimMajor, NimMinor) < (1, 1):
+  type SomePointer = ref | ptr | pointer
+elif (NimMajor, NimMinor) == (2, 0): # Broken in 2.0.0, fixed in 2.1.1.
+  type SomePointer = ref | ptr | pointer | proc
+else:
+  type SomePointer = ref | ptr | pointer | proc | iterator {.closure.}
+
 template toOption[T](option: Option[T]): Option[T] =
   option
 
-template toOption[T: ref | ptr | pointer | proc](value: T): Option[T] =
-  # `std/options` don't consider closure iterators to be pointer types
-  # (probably a bug) so we don't list them here.
+template toOption[T: SomePointer](value: T): Option[T] =
   value.option
 
 proc placeholder(T: type): T =
