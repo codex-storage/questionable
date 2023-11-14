@@ -187,6 +187,18 @@ suite "optionals":
     if a =? p:
       fail
 
+    when (NimMajor, NimMinor) >= (1, 1) and (NimMajor, NimMinor) != (2, 0):
+      var it = iterator: int = yield 2
+      if a =? it:
+        for x in a:
+          check x == 2
+      else:
+        fail
+
+      it = nil
+      if a =? it:
+        fail
+
   test "=? rejects non-reference types":
     check `not` compiles do:
       if a =? 0:
