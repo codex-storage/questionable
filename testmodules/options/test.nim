@@ -355,6 +355,11 @@ suite "optionals":
 
     checkOpenArray(@[1])
 
+  test ".?[] evaluates openArray expression only once":
+    var count = 0
+    discard (inc count; @[1].toOpenArray(0, 0)).?[0]
+    check count == 1
+
   test ".?[] can be followed by calls, operators and indexing":
     let table = @{"a": @[41, 42]}.toTable
     check table.?["a"].isSome
