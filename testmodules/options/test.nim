@@ -337,13 +337,23 @@ suite "optionals":
 
   test ".?[] can be used for indexing strings without raising IndexDefect":
     let str = "a"
-    check str.?[0] == 'a'.some 
+    check str.?[0] == 'a'.some
     check str.?[1] == char.none
+    check str.?[-1] == char.none
 
   test ".?[] can be used for indexing sequences without raising IndexDefect":
     let sequence = @[1]
     check sequence.?[0] == 1.some
     check sequence.?[1] == int.none
+    check sequence.?[-1] == int.none
+
+  test ".?[] can be used for indexing openArrays without raising IndexDefect":
+    proc checkOpenArray(oa: openArray[int]): void =
+      check oa.?[0] == 1.some
+      check oa.?[1] == int.none
+      check oa.?[-1] == int.none
+
+    checkOpenArray(@[1])
 
   test ".?[] can be followed by calls, operators and indexing":
     let table = @{"a": @[41, 42]}.toTable
