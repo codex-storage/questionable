@@ -412,6 +412,17 @@ suite "result":
       for i in 0..<1000:
         spawn fail(i)
 
+  test "without statement doesn't interfere with generic code called elsewhere":
+    proc foo(_: type): ?!int =
+      if error =? success(1).errorOption:
+        discard
+
+    proc bar {.used.} = # defined, but not used
+      without x =? bool.foo(), error:
+        discard error
+
+    discard bool.foo() # same type parameter 'bool' as used in bar()
+
   test "catch can be used to convert exceptions to results":
     check parseInt("42").catch == 42.success
     check parseInt("foo").catch.error of ValueError
