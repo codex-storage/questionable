@@ -7,6 +7,7 @@ import ./indexing
 import ./operators
 import ./without
 import ./withoutresult
+import ./private/bareexcept
 
 include ./private/errorban
 
@@ -109,12 +110,13 @@ proc option*[T,E](value: Result[T,E]): ?T =
   ## Converts a Result into an Option.
 
   if value.isOk:
-    try: # workaround for erroneous exception tracking when T is a closure
-      value.unsafeGet.some
-    except Exception as exception:
-      raise newException(Defect, exception.msg, exception)
+    ignoreBareExceptWarning:
+      try: # workaround for erroneous exception tracking when T is a closure
+        return value.unsafeGet.some
+      except Exception as exception:
+        raise newException(Defect, exception.msg, exception)
   else:
-    T.none
+    return T.none
 
 template toOption*[T, E](value: Result[T, E]): ?T =
   ## Converts a Result into an Option.
