@@ -326,6 +326,48 @@ suite "result":
     test1()
     test2()
 
+  test "without statement with error handles references as well":
+    proc test =
+      var x: ref int = nil
+      without a =? x, error:
+        check error.msg == "ref is nil"
+        return
+      fail
+
+    test()
+
+  test "without statement with error handles pointers as well":
+    proc test =
+      var x: ptr int = nil
+      without a =? x, error:
+        check error.msg == "ptr is nil"
+        return
+      fail
+
+    test()
+
+  test "without statement with error handles closures as well":
+    proc test =
+      var x = proc = discard
+      x = nil
+      without a =? x, error:
+        check error.msg == "proc or iterator is nil"
+        return
+      fail
+
+    test()
+
+  test "without statement with error handles iterators as well":
+    when (NimMajor, NimMinor) != (2, 0):
+      proc test =
+        var x: iterator: int = nil
+        without a =? x, error:
+          check error.msg == "proc or iterator is nil"
+          return
+        fail
+
+      test()
+
   test "without statement with error can be used more than once":
     proc test =
       without a =? 42.success, error:

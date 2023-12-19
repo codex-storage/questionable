@@ -21,8 +21,17 @@ macro captureBindError*(error: var ref CatchableError, expression): auto =
     # return the evaluated result
     evaluated
 
-func error[T](option: Option[T]): ref CatchableError =
+func error[T](_: Option[T]): ref CatchableError =
   newException(ValueError, "Option is set to `none`")
+
+func error[T](_: ref T): ref CatchableError =
+  newException(ValueError, "ref is nil")
+
+func error[T](_: ptr T): ref CatchableError =
+  newException(ValueError, "ptr is nil")
+
+func error[Proc: proc | iterator](_: Proc): ref CatchableError =
+  newException(ValueError, "proc or iterator is nil")
 
 macro bindFailed*(expression: typed) =
   ## Called when a binding (=?) fails.
