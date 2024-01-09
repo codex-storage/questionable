@@ -34,7 +34,7 @@ macro without*(condition, errorname, body: untyped): untyped =
   let body = body.undoSymbolResolution(errorIdent)
 
   quote do:
-    var error: ref CatchableError
+    var error {.gensym.}: ref CatchableError
 
     without captureBindError(error, `condition`):
       template `errorIdent`: ref CatchableError = error
