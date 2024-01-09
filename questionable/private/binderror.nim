@@ -24,13 +24,13 @@ macro captureBindError*(error: var ref CatchableError, expression): auto =
 func error[T](option: Option[T]): ref CatchableError =
   newException(ValueError, "Option is set to `none`")
 
-macro bindFailed*(expression; _: type = void) =
+macro bindFailed*(expression: typed) =
   ## Called when a binding (=?) fails.
   ## Assigns an error to the error variable (specified in captureBindError())
   ## when appropriate.
 
-  # This macro has a type parameter to ensure that the compiler does not
-  # expand it before it expands invocations of captureBindError().
+  # The `expression` parameter is typed to ensure that the compiler does not
+  # expand bindFailed() before it expands invocations of captureBindError().
 
   # check that we have an error variable on the stack
   if errorVariableNames.len > 0:
