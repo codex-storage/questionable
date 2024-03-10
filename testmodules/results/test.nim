@@ -643,6 +643,19 @@ suite "result":
     someProc(42.success)
     someProc(int.failure "some error")
 
+type TypeWithSideEffect = object
+proc `$`*(value: TypeWithSideEffect): string {.sideEffect.} =
+  discard
+
+suite "result side effects":
+
+  test "without statement with error works when `$` has side effects":
+    proc foo =
+      without x =? TypeWithSideEffect.failure("error"), error:
+        discard error
+        return
+      fail()
+    foo()
 
 import pkg/questionable/resultsbase
 
