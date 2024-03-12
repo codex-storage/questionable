@@ -663,7 +663,7 @@ suite "result compatibility":
 
   type R = Result[int, string]
   let good = R.ok 42
-  let bad = R.err "error"
+  let bad = R.err "some error"
 
   test "|?, =? and .option work on other types of Result":
     check bad |? 43 == 43
@@ -681,3 +681,13 @@ suite "result compatibility":
       fail
     without b =? good:
       fail
+
+  test "without statement with error works on other type of Result":
+    without value =? bad, error:
+      check error of ResultFailure
+      check error.msg == "some error"
+
+  test "without statement with error works on Result[T, void]":
+    without value =? Result[int, void].err, error:
+      check error of ResultFailure
+      check error.msg == "Result is an error"
