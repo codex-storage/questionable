@@ -23,16 +23,16 @@ macro captureBindError*(error: var ref CatchableError, expression): auto =
     # return the evaluated result
     `evaluated`
 
-func unsafeError[T](_: Option[T]): ref CatchableError =
+func unsafeCatchableError[T](_: Option[T]): ref CatchableError =
   newException(ValueError, "Option is set to `none`")
 
-func unsafeError[T](_: ref T): ref CatchableError =
+func unsafeCatchableError[T](_: ref T): ref CatchableError =
   newException(ValueError, "ref is nil")
 
-func unsafeError[T](_: ptr T): ref CatchableError =
+func unsafeCatchableError[T](_: ptr T): ref CatchableError =
   newException(ValueError, "ptr is nil")
 
-func unsafeError[Proc: proc | iterator](_: Proc): ref CatchableError =
+func unsafeCatchableError[Proc: proc | iterator](_: Proc): ref CatchableError =
   newException(ValueError, "proc or iterator is nil")
 
 macro bindFailed*(expression: typed) =
@@ -51,4 +51,4 @@ macro bindFailed*(expression: typed) =
       # check that the error variable is in scope
       when compiles(`errorVariable`):
         # assign bind error to error variable
-        `errorVariable` = `expression`.unsafeError
+        `errorVariable` = `expression`.unsafeCatchableError

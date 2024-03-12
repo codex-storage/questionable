@@ -123,6 +123,18 @@ template toOption*[T, E](value: Result[T, E]): ?T =
 
   value.option
 
+proc unsafeCatchableError*[T, E](value: Result[T, E]): ref CatchableError =
+  ## Returns the error from the Result, converted to `ref CatchableError` if
+  ## necessary. Behaviour is undefined when the result holds a value instead of
+  ## an error.
+  when E is ref CatchableError:
+    value.unsafeError
+  else:
+    when compiles($value.unsafeError):
+      newException(ResultFailure, $value.unsafeError)
+    else:
+      newException(ResultFailure, "Result is an error")
+
 proc errorOption*[T, E](value: Result[T, E]): ?E =
   ## Returns an Option that contains the error from the Result, if it has one.
 
