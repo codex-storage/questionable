@@ -11,15 +11,17 @@ macro captureBindError*(error: var ref CatchableError, expression): auto =
 
   # name of the error variable as a string literal
   let errorVariableName = newLit($error)
+
+  let evaluated = genSym(nskLet, "evaluated")
   quote do:
     # add error variable to the top of the stack
     static: errorVariableNames.add(`errorVariableName`)
     # evaluate the expression
-    let evaluated = `expression`
+    let `evaluated` = `expression`
     # pop error variable from the stack
     static: discard errorVariableNames.pop()
     # return the evaluated result
-    evaluated
+    `evaluated`
 
 func unsafeError[T](_: Option[T]): ref CatchableError =
   newException(ValueError, "Option is set to `none`")
