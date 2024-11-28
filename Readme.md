@@ -151,7 +151,7 @@ have to explicitly import the `questionable/results` module:
 import questionable/results
 ```
 
-You can use `?!` make a Result type. These Result types either hold a value or
+You can use `?!` to make a Result type. These Result types either hold a value or
 an error. For example the type `?!int` is short for `Result[int, ref
 CatchableError]`.
 
